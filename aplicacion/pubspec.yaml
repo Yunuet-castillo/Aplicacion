@@ -1,0 +1,33 @@
+name: aplicacion
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assest/Designer.png"
+
+flutter:
+  uses-material-design: true
+
+fonts:
+  - family: ComicSans
+    fonts:
+      - asset: fonts/ComicSans.ttf
