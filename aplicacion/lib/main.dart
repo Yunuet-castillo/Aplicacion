@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MateManiaApp());
+void main() => runApp(Login());
 
 class MateManiaApp extends StatelessWidget {
   @override
@@ -45,7 +45,7 @@ class _WelcomePageState extends State<WelcomePage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.pinkAccent, Colors.orangeAccent],
+            colors: [Colors.purple, Color.fromARGB(255, 255, 255, 255)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -60,6 +60,124 @@ class _WelcomePageState extends State<WelcomePage> {
             ),
             textAlign: TextAlign.center,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class Login extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: LoginScreen(),
+    );
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF0F2027),
+              Color.fromARGB(255, 129, 100, 190),
+              Color.fromARGB(255, 129, 100, 190)
+            ],
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade50.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Inicia Sesión",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.0,
+                      color: Colors.teal.shade700,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  _buildTextField(Icons.person, "Usuario"),
+                  SizedBox(height: 10),
+                  _buildTextField(Icons.lock, "Password", isPassword: true),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 100, vertical: 12),
+                    ),
+                    child: Text("Aceptar",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        )),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.tealAccent.shade400,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 100, vertical: 12),
+                    ),
+                    child: Text(
+                      "Registrate",
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(IconData icon, String hintText,
+      {bool isPassword = false}) {
+    return TextField(
+      obscureText: isPassword,
+      style: TextStyle(color: const Color.fromARGB(255, 129, 100, 190)),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: const Color.fromARGB(255, 115, 92, 161)),
+        hintText: hintText,
+        hintStyle: TextStyle(color: const Color.fromARGB(255, 165, 151, 206)),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.9),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
       ),
     );
