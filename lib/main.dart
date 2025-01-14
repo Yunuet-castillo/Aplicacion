@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(Login());
+void main() => runApp(MateManiaApp());
 
 class MateManiaApp extends StatelessWidget {
   @override
@@ -15,17 +15,17 @@ class MateManiaApp extends StatelessWidget {
           labelLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
-      home: WelcomePage(),
+      home: SplashScreen(),
     );
   }
 }
 
-class WelcomePage extends StatefulWidget {
+class SplashScreen extends StatefulWidget {
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -33,7 +33,7 @@ class _WelcomePageState extends State<WelcomePage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => RegistrationForm(),
+          builder: (context) => LoginScreen(),
         ),
       );
     });
@@ -45,7 +45,7 @@ class _WelcomePageState extends State<WelcomePage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.purple, Color.fromARGB(255, 255, 255, 255)],
+            colors: [Colors.purple, Colors.white],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -66,16 +66,6 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 }
 
-class Login extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
-    );
-  }
-}
-
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -86,9 +76,9 @@ class LoginScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color.fromARGB(255, 255, 255, 255),
+              Colors.white,
               Color.fromARGB(255, 129, 100, 190),
-              Color.fromARGB(255, 129, 100, 190)
+              Color.fromARGB(255, 129, 100, 190),
             ],
           ),
         ),
@@ -119,7 +109,9 @@ class LoginScreen extends StatelessWidget {
                   _buildTextField(Icons.lock, "Password", isPassword: true),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // para iniciar sesión
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       shape: RoundedRectangleBorder(
@@ -128,16 +120,20 @@ class LoginScreen extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(horizontal: 100, vertical: 12),
                     ),
-                    child: Text("Aceptar",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        )),
+                    child: Text(
+                      "Aceptar",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // para registrarse
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.tealAccent.shade400,
                       shape: RoundedRectangleBorder(
@@ -147,7 +143,7 @@ class LoginScreen extends StatelessWidget {
                           EdgeInsets.symmetric(horizontal: 100, vertical: 12),
                     ),
                     child: Text(
-                      "Registrate",
+                      "Regístrate",
                       style: TextStyle(
                         color: Colors.black87,
                         fontWeight: FontWeight.bold,
