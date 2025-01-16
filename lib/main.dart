@@ -110,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // para iniciar sesión
+                      // Lógica para iniciar sesión
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
@@ -132,7 +132,11 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // para registrarse
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RegistrationForm()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.tealAccent.shade400,
@@ -160,24 +164,43 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(IconData icon, String hintText,
+  // Método para crear los TextFields reutilizables
+  Widget _buildTextField(IconData icon, String hint,
       {bool isPassword = false}) {
     return TextField(
       obscureText: isPassword,
-      style: TextStyle(color: const Color.fromARGB(255, 129, 100, 190)),
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: const Color.fromARGB(255, 115, 92, 161)),
-        hintText: hintText,
-        hintStyle: TextStyle(color: const Color.fromARGB(255, 165, 151, 206)),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.9),
+        prefixIcon: Icon(icon),
+        hintText: hint,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
         ),
+        filled: true,
+        fillColor: Colors.white,
       ),
     );
   }
+}
+
+// Clase de ejemplo para RegistrationForm
+
+Widget _buildTextField(IconData icon, String hintText,
+    {bool isPassword = false}) {
+  return TextField(
+    obscureText: isPassword,
+    style: TextStyle(color: const Color.fromARGB(255, 129, 100, 190)),
+    decoration: InputDecoration(
+      prefixIcon: Icon(icon, color: const Color.fromARGB(255, 115, 92, 161)),
+      hintText: hintText,
+      hintStyle: TextStyle(color: const Color.fromARGB(255, 165, 151, 206)),
+      filled: true,
+      fillColor: Colors.white.withOpacity(0.9),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+    ),
+  );
 }
 
 class RegistrationForm extends StatefulWidget {
