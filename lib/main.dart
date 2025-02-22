@@ -116,8 +116,8 @@ class _SplashScreenState extends State<SplashScreen>
                                     offset: Offset(0, 10),
                                   ),
                                 ],
-        ),
-        child: Center(
+                              ),
+                              child: Center(
                                 child: Icon(
                                   Icons.calculate,
                                   size: 80,
@@ -137,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen>
                         children: [
                           Text(
                             '¡Bienvenido a',
-            style: TextStyle(
+                            style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.w300,
                               color: Colors.white,
@@ -148,8 +148,8 @@ class _SplashScreenState extends State<SplashScreen>
                             'MateManía!',
                             style: TextStyle(
                               fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                               letterSpacing: 2,
                               shadows: [
                                 Shadow(
@@ -205,16 +205,16 @@ class LoginScreen extends StatelessWidget {
         children: [
           // Fondo con gradiente y diseño
           Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
                   Color(0xFF7B1FA2),
                   Color(0xFFE1BEE7),
-            ],
-          ),
-        ),
+                ],
+              ),
+            ),
           ),
           // Patrón de decoración
           Positioned.fill(
@@ -225,7 +225,7 @@ class LoginScreen extends StatelessWidget {
           // Contenido principal
           SafeArea(
             child: SingleChildScrollView(
-          child: Padding(
+              child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
@@ -233,10 +233,10 @@ class LoginScreen extends StatelessWidget {
                     // Logo y título
                     Hero(
                       tag: 'app_logo',
-            child: Container(
+                      child: Container(
                         width: 120,
                         height: 120,
-              decoration: BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
                           boxShadow: [
@@ -255,11 +255,11 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 30),
-                  Text(
+                    Text(
                       'MateManía',
-                    style: TextStyle(
+                      style: TextStyle(
                         fontSize: 40,
-                      fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: 2,
                         shadows: [
@@ -292,8 +292,8 @@ class LoginScreen extends StatelessWidget {
                             Icons.person_outline,
                             "Usuario",
                             false,
-                  ),
-                  SizedBox(height: 20),
+                          ),
+                          SizedBox(height: 20),
                           _buildTextField(
                             Icons.lock_outline,
                             "Contraseña",
@@ -301,7 +301,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 30),
                           _buildLoginButton(context),
-                  SizedBox(height: 20),
+                          SizedBox(height: 20),
                           _buildRegisterButton(context),
                         ],
                       ),
@@ -366,31 +366,31 @@ class LoginScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
               builder: (context) => MyHomePage(title: 'MateManía'),
             ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
+          );
+        },
+        style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFF7B1FA2),
           padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
-                      ),
+          ),
           elevation: 5,
-                    ),
-                    child: Text(
+        ),
+        child: Text(
           'Iniciar Sesión',
-                      style: TextStyle(
+          style: TextStyle(
             fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ),
     );
   }
 
@@ -398,28 +398,28 @@ class LoginScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
+        onPressed: () {
+          Navigator.push(
+            context,
             MaterialPageRoute(builder: (context) => RegistrationForm()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
+          );
+        },
+        style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
             side: BorderSide(color: Color(0xFF7B1FA2), width: 2),
-                      ),
+          ),
           elevation: 0,
-                    ),
-                    child: Text(
+        ),
+        child: Text(
           'Registrarse',
-                      style: TextStyle(
+          style: TextStyle(
             color: Color(0xFF7B1FA2),
             fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
           ),
         ),
       ),
@@ -482,9 +482,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
           // Fondo con gradiente
           Container(
             decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
                 colors: [
                   Color(0xFF7B1FA2),
                   Color(0xFFE1BEE7),
@@ -501,10 +501,10 @@ class _RegistrationFormState extends State<RegistrationForm> {
           // Contenido principal
           SafeArea(
             child: SingleChildScrollView(
-        child: Padding(
+              child: Padding(
                 padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
+                child: Column(
+                  children: [
                     // Botón de regreso
                     Align(
                       alignment: Alignment.topLeft,
@@ -517,10 +517,10 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     // Título
                     Text(
                       'Crear Cuenta',
-                style: TextStyle(
+                      style: TextStyle(
                         fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                         letterSpacing: 1.5,
                       ),
                     ),
@@ -539,11 +539,11 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           ),
                         ],
                       ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        _buildTextField(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            _buildTextField(
                               controller: _nameController,
                               icon: Icons.person_outline,
                               label: "Nombre completo",
@@ -555,9 +555,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
                               },
                             ),
                             SizedBox(height: 20),
-                        _buildDatePickerField(),
+                            _buildDatePickerField(),
                             SizedBox(height: 20),
-                        _buildTextField(
+                            _buildTextField(
                               controller: _ageController,
                               icon: Icons.cake_outlined,
                               label: "Edad",
@@ -570,7 +570,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                               },
                             ),
                             SizedBox(height: 20),
-                        _buildTextField(
+                            _buildTextField(
                               controller: _schoolController,
                               icon: Icons.school_outlined,
                               label: "Escuela",
@@ -582,7 +582,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                               },
                             ),
                             SizedBox(height: 20),
-                        _buildTextField(
+                            _buildTextField(
                               controller: _emailController,
                               icon: Icons.email_outlined,
                               label: "Correo electrónico",
@@ -607,7 +607,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                                       : Icons.visibility,
                                   color: Color(0xFF7B1FA2),
                                 ),
-                          onPressed: () {
+                                onPressed: () {
                                   setState(() {
                                     _obscurePassword = !_obscurePassword;
                                   });
@@ -628,7 +628,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                                   if (_formKey.currentState!.validate()) {
                                     // Implementar lógica de registro
                                     print('Nombre: ${_nameController.text}');
-                              print(
+                                    print(
                                         'Fecha: ${_birthDateController.text}');
                                     print('Edad: ${_ageController.text}');
                                     print('Escuela: ${_schoolController.text}');
@@ -640,34 +640,34 @@ class _RegistrationFormState extends State<RegistrationForm> {
                                         backgroundColor: Color(0xFF7B1FA2),
                                       ),
                                     );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF7B1FA2),
                                   padding: EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
+                                  shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
-                            ),
+                                  ),
                                   elevation: 5,
-                          ),
+                                ),
                                 child: Text(
                                   'Registrarse',
-                            style: TextStyle(
+                                  style: TextStyle(
                                     fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                     letterSpacing: 1.2,
                                   ),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
           ),
         ],
       ),
@@ -676,18 +676,18 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
   Widget _buildDatePickerField() {
     return _buildTextField(
-        controller: _birthDateController,
+      controller: _birthDateController,
       icon: Icons.calendar_today_outlined,
       label: "Fecha de nacimiento",
-        readOnly: true,
-        onTap: () async {
-          DateTime? pickedDate = await showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(1900),
-            lastDate: DateTime.now(),
-          );
-          if (pickedDate != null) {
+      readOnly: true,
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        );
+        if (pickedDate != null) {
           setState(() {
             _birthDateController.text =
                 "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
@@ -825,7 +825,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.book, size: 32),
               activeIcon: Container(
                 padding: EdgeInsets.all(10),
@@ -835,9 +835,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: Icon(Icons.book, size: 32),
               ),
-            label: 'Niveles',
-          ),
-          BottomNavigationBarItem(
+              label: 'Niveles',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.emoji_events, size: 32),
               activeIcon: Container(
                 padding: EdgeInsets.all(10),
@@ -847,9 +847,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: Icon(Icons.emoji_events, size: 32),
               ),
-            label: 'Logros',
-          ),
-          BottomNavigationBarItem(
+              label: 'Logros',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.person, size: 32),
               activeIcon: Container(
                 padding: EdgeInsets.all(10),
@@ -859,18 +859,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: Icon(Icons.person, size: 32),
               ),
-            label: 'Perfil',
-          ),
-        ],
-        currentIndex: _selectedIndex,
+              label: 'Perfil',
+            ),
+          ],
+          currentIndex: _selectedIndex,
           selectedItemColor: Color(0xFF7B1FA2),
           unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
           elevation: 0,
-        onTap: _onItemTapped,
-      ),
+          onTap: _onItemTapped,
+        ),
       ),
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton.extended(
@@ -1070,7 +1070,7 @@ class _AchievementsPage extends StatelessWidget {
               [
                 _buildProgress("Ejercicios Completados", 20, 50),
                 _buildProgress("Mejor Tiempo", 45, 60),
-                _buildProgress("Respuestas incorrectas", 75, 100),
+                _buildProgress("Respuestas Incorrectas", 75, 100),
               ],
             ),
           ],
@@ -1280,8 +1280,8 @@ class _ProfilePage extends StatelessWidget {
               // Información del usuario
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
+                child: Column(
+                  children: [
                     _buildInfoCard(
                       title: "Información Personal",
                       children: [
@@ -1292,8 +1292,8 @@ class _ProfilePage extends StatelessWidget {
                             "Primaria Emiliano Zapata"),
                         _buildInfoRow(Icons.email, "Email", "yunuet@gmail.com"),
                       ],
-              ),
-              SizedBox(height: 20),
+                    ),
+                    SizedBox(height: 20),
                     _buildInfoCard(
                       title: "Estadísticas",
                       children: [
@@ -1302,7 +1302,7 @@ class _ProfilePage extends StatelessWidget {
                         _buildProgressBar(
                             "Ejercicios Completados", 0.85, "85%"),
                         SizedBox(height: 15),
-                        _buildProgressBar("Precisión", 0.92, "92%"),
+                        _buildProgressBar("Ejercicos Incorrectos", 0.92, "92%"),
                       ],
                     ),
                   ],
@@ -1321,25 +1321,25 @@ class _ProfilePage extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
             color: Colors.black12,
-                      blurRadius: 10,
+            blurRadius: 10,
             offset: Offset(0, 5),
-                    ),
-                  ],
-                ),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-                  style: TextStyle(
+            style: TextStyle(
               fontSize: 20,
-                    fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold,
               color: Colors.purple[800],
             ),
           ),
@@ -1361,7 +1361,7 @@ class _ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Text(
+                Text(
                   label,
                   style: TextStyle(
                     color: Colors.grey[600],
@@ -1386,22 +1386,22 @@ class _ProfilePage extends StatelessWidget {
   Widget _buildProgressBar(String label, double value, String progressText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+      children: [
+        Text(
           label,
-                      style: TextStyle(
+          style: TextStyle(
             color: Colors.grey[600],
             fontSize: 14,
-                    ),
+          ),
         ),
         SizedBox(height: 8),
         Stack(
           children: [
-                    Container(
+            Container(
               height: 20,
-                      decoration: BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
             FractionallySizedBox(
@@ -1414,10 +1414,10 @@ class _ProfilePage extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                ),
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
         SizedBox(height: 4),
         Text(
           progressText,
@@ -1783,12 +1783,12 @@ class _EasyLevelPageState extends State<EasyLevelPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-              Text(
+                Text(
                   "¿Cuántas operaciones?",
-                style: TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
@@ -1797,9 +1797,9 @@ class _EasyLevelPageState extends State<EasyLevelPage>
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.red.withOpacity(0.2),
                     shape: CircleBorder(),
+                  ),
                 ),
-              ),
-            ],
+              ],
             ),
           ),
           content: Column(
@@ -1855,12 +1855,12 @@ class _EasyLevelPageState extends State<EasyLevelPage>
       questionsAsked = 0;
       userAnswer = "";
     });
-      Navigator.pop(context);
+    Navigator.pop(context);
     generateExercise();
   }
 
   void generateExercise() {
-      final random = Random();
+    final random = Random();
     setState(() {
       num1 = random.nextInt(10) + 1;
       num2 = random.nextInt(10) + 1;
@@ -1878,7 +1878,7 @@ class _EasyLevelPageState extends State<EasyLevelPage>
           correctAnswer = num1 * num2;
           break;
       }
-      });
+    });
   }
 
   void checkAnswer() {
@@ -1938,14 +1938,6 @@ class _EasyLevelPageState extends State<EasyLevelPage>
                 incorrectCount,
                 Icons.cancel,
                 Colors.red,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Precisión",
-                accuracy.round(),
-                Icons.percent,
-                Colors.blue,
-                isPercentage: true,
               ),
             ],
           ),
@@ -2061,7 +2053,7 @@ class _EasyLevelPageState extends State<EasyLevelPage>
                 ),
               ),
               Expanded(
-        child: Center(
+                child: Center(
                   child: SingleChildScrollView(
                     child: AnimatedBuilder(
                       animation: _scaleAnimation,
@@ -2071,46 +2063,46 @@ class _EasyLevelPageState extends State<EasyLevelPage>
                           child: child,
                         );
                       },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
                             padding: EdgeInsets.all(30),
                             margin: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10,
                                   offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
+                                ),
+                              ],
+                            ),
                             child: Column(
                               children: [
                                 Text(
-                      "$num1 $operation $num2 = ?",
-                      style: TextStyle(
+                                  "$num1 $operation $num2 = ?",
+                                  style: TextStyle(
                                     fontSize: 40,
-                        fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                     color: Color(0xFF7B1FA2),
-                    ),
-                  ),
-                SizedBox(height: 30),
-                Container(
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                                Container(
                                   width: 150,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
+                                  child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF7B1FA2),
                                     ),
-                    decoration: InputDecoration(
-                      hintText: "?",
+                                    decoration: InputDecoration(
+                                      hintText: "?",
                                       hintStyle: TextStyle(
                                         color: Colors.grey[400],
                                         fontSize: 30,
@@ -2121,19 +2113,19 @@ class _EasyLevelPageState extends State<EasyLevelPage>
                                       ),
                                       filled: true,
                                       fillColor: Colors.grey[100],
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        userAnswer = value;
-                      });
-                    },
-                    onSubmitted: (value) {
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        userAnswer = value;
+                                      });
+                                    },
+                                    onSubmitted: (value) {
                                       if (value.isNotEmpty) {
-                      checkAnswer();
+                                        checkAnswer();
                                       }
-                    },
-                  ),
-                ),
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -2143,28 +2135,28 @@ class _EasyLevelPageState extends State<EasyLevelPage>
                             child: ElevatedButton(
                               onPressed:
                                   userAnswer.isNotEmpty ? checkAnswer : null,
-                  style: ElevatedButton.styleFrom(
+                              style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF7B1FA2),
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 50,
                                   vertical: 15,
                                 ),
-                    shape: RoundedRectangleBorder(
+                                shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
-                    ),
+                                ),
                                 elevation: 5,
-                  ),
-                  child: Text(
+                              ),
+                              child: Text(
                                 "Comprobar",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                  ),
-                ),
-              ],
-            ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -2240,12 +2232,12 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-              Text(
+                Text(
                   "¿Cuántas operaciones?",
-                style: TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
@@ -2254,9 +2246,9 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.red.withOpacity(0.2),
                     shape: CircleBorder(),
+                  ),
                 ),
-              ),
-            ],
+              ],
             ),
           ),
           content: Column(
@@ -2312,7 +2304,7 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
       questionsAsked = 0;
       userAnswer = "";
     });
-      Navigator.pop(context);
+    Navigator.pop(context);
     generateExercise();
   }
 
@@ -2322,24 +2314,24 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
       num1 = random.nextInt(50) + 50; // Números entre 50 y 99
       num2 = random.nextInt(50) + 50;
       final operations = ['+', '-', '*', '/'];
-    operation = operations[random.nextInt(operations.length)];
+      operation = operations[random.nextInt(operations.length)];
 
-    switch (operation) {
-      case '+':
-        correctAnswer = num1 + num2;
-        break;
-      case '-':
-        correctAnswer = num1 - num2;
-        break;
-      case '*':
-        correctAnswer = num1 * num2;
-        break;
-      case '/':
+      switch (operation) {
+        case '+':
+          correctAnswer = num1 + num2;
+          break;
+        case '-':
+          correctAnswer = num1 - num2;
+          break;
+        case '*':
+          correctAnswer = num1 * num2;
+          break;
+        case '/':
           // Asegurar división exacta
           num1 = num1 * num2;
-        correctAnswer = num1 ~/ num2;
-        break;
-    }
+          correctAnswer = num1 ~/ num2;
+          break;
+      }
     });
   }
 
@@ -2400,14 +2392,6 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
                 incorrectCount,
                 Icons.cancel,
                 Colors.red,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Precisión",
-                accuracy.round(),
-                Icons.percent,
-                Colors.blue,
-                isPercentage: true,
               ),
             ],
           ),
@@ -2523,7 +2507,7 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
                 ),
               ),
               Expanded(
-        child: Center(
+                child: Center(
                   child: SingleChildScrollView(
                     child: AnimatedBuilder(
                       animation: _scaleAnimation,
@@ -2533,46 +2517,46 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
                           child: child,
                         );
                       },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
                             padding: EdgeInsets.all(30),
                             margin: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10,
                                   offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
+                                ),
+                              ],
+                            ),
                             child: Column(
                               children: [
                                 Text(
-                      "$num1 $operation $num2 = ?",
-                      style: TextStyle(
+                                  "$num1 $operation $num2 = ?",
+                                  style: TextStyle(
                                     fontSize: 40,
-                        fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                     color: Color(0xFF7B1FA2),
-                    ),
-                  ),
-                SizedBox(height: 30),
-                Container(
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                                Container(
                                   width: 150,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
+                                  child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF7B1FA2),
                                     ),
-                    decoration: InputDecoration(
-                      hintText: "?",
+                                    decoration: InputDecoration(
+                                      hintText: "?",
                                       hintStyle: TextStyle(
                                         color: Colors.grey[400],
                                         fontSize: 30,
@@ -2583,19 +2567,19 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
                                       ),
                                       filled: true,
                                       fillColor: Colors.grey[100],
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        userAnswer = value;
-                      });
-                    },
-                    onSubmitted: (value) {
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        userAnswer = value;
+                                      });
+                                    },
+                                    onSubmitted: (value) {
                                       if (value.isNotEmpty) {
-                      checkAnswer();
+                                        checkAnswer();
                                       }
-                    },
-                  ),
-                ),
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -2605,28 +2589,28 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
                             child: ElevatedButton(
                               onPressed:
                                   userAnswer.isNotEmpty ? checkAnswer : null,
-                  style: ElevatedButton.styleFrom(
+                              style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF7B1FA2),
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 50,
                                   vertical: 15,
                                 ),
-                    shape: RoundedRectangleBorder(
+                                shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
-                    ),
+                                ),
                                 elevation: 5,
-                  ),
-                  child: Text(
+                              ),
+                              child: Text(
                                 "Comprobar",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                  ),
-                ),
-              ],
-            ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -2671,7 +2655,7 @@ class _HardLevelPageState extends State<HardLevelPage> {
       questionsAsked = 0;
       userAnswer = "";
     });
-      Navigator.pop(context);
+    Navigator.pop(context);
     generateExercise();
   }
 
@@ -2681,24 +2665,24 @@ class _HardLevelPageState extends State<HardLevelPage> {
       num1 = random.nextInt(90) + 10; // Números entre 10 y 99
       num2 = random.nextInt(90) + 10;
 
-    List<String> operations = ['+', '-', '*', '/'];
-    operation = operations[random.nextInt(operations.length)];
+      List<String> operations = ['+', '-', '*', '/'];
+      operation = operations[random.nextInt(operations.length)];
 
-    switch (operation) {
-      case '+':
+      switch (operation) {
+        case '+':
           correctAnswer = (num1 + num2).toDouble();
-        break;
-      case '-':
+          break;
+        case '-':
           correctAnswer = (num1 - num2).toDouble();
-        break;
-      case '*':
+          break;
+        case '*':
           correctAnswer = (num1 * num2).toDouble();
-        break;
-      case '/':
+          break;
+        case '/':
           // Asegurar división exacta
           num1 = (num1 * num2);
           correctAnswer = num1 / num2;
-        break;
+          break;
       }
     });
   }
@@ -2706,22 +2690,22 @@ class _HardLevelPageState extends State<HardLevelPage> {
   void checkAnswer() {
     if (userAnswer.isEmpty) return;
 
-      double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
-      if (parsedAnswer == correctAnswer) {
-        correctCount++;
-      } else {
-        incorrectCount++;
-      }
+    double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
+    if (parsedAnswer == correctAnswer) {
+      correctCount++;
+    } else {
+      incorrectCount++;
+    }
 
-      setState(() {
-        questionsAsked++;
-        userAnswer = "";
-      });
+    setState(() {
+      questionsAsked++;
+      userAnswer = "";
+    });
 
-      if (questionsAsked >= totalQuestions) {
-        showResults();
-      } else {
-        generateExercise();
+    if (questionsAsked >= totalQuestions) {
+      showResults();
+    } else {
+      generateExercise();
     }
   }
 
@@ -2758,14 +2742,6 @@ class _HardLevelPageState extends State<HardLevelPage> {
                 incorrectCount,
                 Icons.cancel,
                 Colors.red,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Precisión",
-                accuracy.round(),
-                Icons.percent,
-                Colors.blue,
-                isPercentage: true,
               ),
             ],
           ),
@@ -2881,48 +2857,48 @@ class _HardLevelPageState extends State<HardLevelPage> {
                 ),
               ),
               Expanded(
-        child: Center(
+                child: Center(
                   child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
                           padding: EdgeInsets.all(30),
                           margin: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
                                 offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
+                              ),
+                            ],
+                          ),
                           child: Column(
                             children: [
                               Text(
-                      "$num1 $operation $num2 = ?",
-                      style: TextStyle(
+                                "$num1 $operation $num2 = ?",
+                                style: TextStyle(
                                   fontSize: 40,
-                        fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
                                   color: Color(0xFF7B1FA2),
-                    ),
-                  ),
-                SizedBox(height: 30),
-                Container(
+                                ),
+                              ),
+                              SizedBox(height: 30),
+                              Container(
                                 width: 150,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
+                                child: TextField(
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFF7B1FA2),
                                   ),
-                    decoration: InputDecoration(
-                      hintText: "?",
+                                  decoration: InputDecoration(
+                                    hintText: "?",
                                     hintStyle: TextStyle(
                                       color: Colors.grey[400],
                                       fontSize: 30,
@@ -2933,19 +2909,19 @@ class _HardLevelPageState extends State<HardLevelPage> {
                                     ),
                                     filled: true,
                                     fillColor: Colors.grey[100],
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        userAnswer = value;
-                      });
-                    },
-                    onSubmitted: (value) {
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      userAnswer = value;
+                                    });
+                                  },
+                                  onSubmitted: (value) {
                                     if (value.isNotEmpty) {
-                      checkAnswer();
+                                      checkAnswer();
                                     }
-                    },
-                  ),
-                ),
+                                  },
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -2955,28 +2931,28 @@ class _HardLevelPageState extends State<HardLevelPage> {
                           child: ElevatedButton(
                             onPressed:
                                 userAnswer.isNotEmpty ? checkAnswer : null,
-                  style: ElevatedButton.styleFrom(
+                            style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF7B1FA2),
                               padding: EdgeInsets.symmetric(
                                 horizontal: 50,
                                 vertical: 15,
                               ),
-                    shape: RoundedRectangleBorder(
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
-                    ),
+                              ),
                               elevation: 5,
-                  ),
-                  child: Text(
+                            ),
+                            child: Text(
                               "Comprobar",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                  ),
-                ),
-              ],
-            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -3011,7 +2987,7 @@ class _HardLevelPageState extends State<HardLevelPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "¿Cuántas operaciones?",
+                  "¿Cuántas operaciones quieres hacer?",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -3165,7 +3141,7 @@ class _TimedLevelPageState extends State<TimedLevelPage> {
               ),
               onPressed: () => Navigator.pop(context),
             ),
-              ElevatedButton(
+            ElevatedButton(
               child: Text("¡Comenzar!"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF7B1FA2),
@@ -3217,46 +3193,46 @@ class _TimedLevelPageState extends State<TimedLevelPage> {
       num2 = random.nextInt(90) + 10;
 
       List<String> operations = ['+', '-', '*', '/'];
-    operation = operations[random.nextInt(operations.length)];
+      operation = operations[random.nextInt(operations.length)];
 
-    switch (operation) {
-      case '+':
-        correctAnswer = (num1 + num2).toDouble();
-        break;
-      case '-':
-        correctAnswer = (num1 - num2).toDouble();
-        break;
-      case '*':
-        correctAnswer = (num1 * num2).toDouble();
-        break;
+      switch (operation) {
+        case '+':
+          correctAnswer = (num1 + num2).toDouble();
+          break;
+        case '-':
+          correctAnswer = (num1 - num2).toDouble();
+          break;
+        case '*':
+          correctAnswer = (num1 * num2).toDouble();
+          break;
         case '/':
           // Asegurar división exacta
           num1 = (num1 * num2);
           correctAnswer = num1 / num2;
           break;
-    }
+      }
     });
   }
 
   void checkAnswer() {
     if (userAnswer.isEmpty) return;
 
-      double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
-      if (parsedAnswer == correctAnswer) {
-        correctCount++;
-      } else {
-        incorrectCount++;
-      }
+    double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
+    if (parsedAnswer == correctAnswer) {
+      correctCount++;
+    } else {
+      incorrectCount++;
+    }
 
-      setState(() {
-        questionsAsked++;
-        userAnswer = "";
-      });
+    setState(() {
+      questionsAsked++;
+      userAnswer = "";
+    });
 
-      if (questionsAsked >= totalQuestions) {
-        showResults();
-      } else {
-        generateExercise();
+    if (questionsAsked >= totalQuestions) {
+      showResults();
+    } else {
+      generateExercise();
     }
   }
 
@@ -3307,14 +3283,6 @@ class _TimedLevelPageState extends State<TimedLevelPage> {
                 Icons.cancel,
                 Colors.red,
               ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Precisión",
-                accuracy.round(),
-                Icons.percent,
-                Colors.blue,
-                isPercentage: true,
-              ),
             ],
           ),
           actions: [
@@ -3346,34 +3314,200 @@ class _TimedLevelPageState extends State<TimedLevelPage> {
         elevation: 0,
       ),
       body: Container(
-        // ... mantener la decoración existente ...
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: SafeArea(
-            child: Column(
-              children: [
-              // Timer display con animación
-                  Container(
-                padding: EdgeInsets.all(20),
-                child: Column(
+          child: Column(
+            children: [
+              // Timer display mejorado
+              Container(
+                margin: EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Icon(
+                      Icons.timer,
+                      color: timeLeft <= 5 ? Colors.red : Color(0xFF7B1FA2),
+                      size: 30,
+                    ),
+                    SizedBox(width: 10),
                     Text(
                       timeLeft.toString(),
                       style: TextStyle(
-                        color: timeLeft <= 5 ? Colors.red : Colors.white,
-                        fontSize: 48,
+                        color: timeLeft <= 5 ? Colors.red : Color(0xFF7B1FA2),
+                        fontSize: 40,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    SizedBox(width: 10),
                     Text(
-                      "segundos restantes",
+                      "segundos",
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: Color(0xFF7B1FA2),
                         fontSize: 16,
                       ),
                     ),
                   ],
                 ),
               ),
-              // ... mantener el resto del contenido existente ...
+              // Progreso
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Progreso",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "$questionsAsked/$totalQuestions",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    LinearProgressIndicator(
+                      value: totalQuestions > 0
+                          ? questionsAsked / totalQuestions
+                          : 0,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      minHeight: 10,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ],
+                ),
+              ),
+              // Operación matemática
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(30),
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "$num1 $operation $num2 = ?",
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF7B1FA2),
+                                ),
+                              ),
+                              SizedBox(height: 30),
+                              Container(
+                                width: 150,
+                                child: TextField(
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF7B1FA2),
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: "?",
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 30,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[100],
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      userAnswer = value;
+                                    });
+                                  },
+                                  onSubmitted: (value) {
+                                    if (value.isNotEmpty) {
+                                      checkAnswer();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        // Botón de verificar
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: ElevatedButton(
+                            onPressed:
+                                userAnswer.isNotEmpty ? checkAnswer : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF7B1FA2),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 15,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              elevation: 5,
+                            ),
+                            child: Text(
+                              "Comprobar",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -3407,9 +3541,9 @@ class _TimedLevelPageState extends State<TimedLevelPage> {
               color: color,
               fontWeight: FontWeight.bold,
               fontSize: 18,
-                  ),
-                ),
-              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -3420,7 +3554,7 @@ class MateManiaDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-              decoration: BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -3461,63 +3595,63 @@ class MateManiaDrawer extends StatelessWidget {
                   ),
                   SizedBox(height: 15),
                   Text(
-                'Configuración',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+                    'Configuración',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
-                ),
-              ),
+                    ),
+                  ),
                 ],
-            ),
+              ),
             ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.symmetric(vertical: 10),
                 children: [
-            _createDrawerItem(
-              icon: Icons.edit,
-              text: 'Cambiar nombre',
+                  _createDrawerItem(
+                    icon: Icons.edit,
+                    text: 'Cambiar nombre',
                     description: 'Actualiza tu nombre de usuario',
                     color: Colors.green,
-              onTap: () => _showEditDialog(context, 'nombre'),
-            ),
-            _createDrawerItem(
-              icon: Icons.vpn_key,
-              text: 'Contraseña',
+                    onTap: () => _showEditDialog(context, 'nombre'),
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.vpn_key,
+                    text: 'Contraseña',
                     description: 'Modifica tu contraseña',
                     color: Colors.orange,
-              onTap: () => _showPasswordDialog(context),
-            ),
-            _createDrawerItem(
-              icon: Icons.comment,
-              text: 'Comentarios',
+                    onTap: () => _showPasswordDialog(context),
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.comment,
+                    text: 'Comentarios',
                     description: 'Deja tus sugerencias',
                     color: Colors.blue,
-              onTap: () => _showEditDialog(context, 'comentario'),
-            ),
-            _createDrawerItem(
+                    onTap: () => _showEditDialog(context, 'comentario'),
+                  ),
+                  _createDrawerItem(
                     icon: Icons.history,
-              text: 'Progreso e Historial',
+                    text: 'Progreso e Historial',
                     description: 'Revisa tu avance',
                     color: Colors.purple,
-              onTap: () => _navigate(context, 'Progreso e Historial'),
-            ),
+                    onTap: () => _navigate(context, 'Progreso e Historial'),
+                  ),
                   Divider(color: Colors.white30, thickness: 1),
-            _createDrawerItem(
+                  _createDrawerItem(
                     icon: Icons.logout,
-              text: 'Cerrar Sesión',
+                    text: 'Cerrar Sesión',
                     description: 'Salir de tu cuenta',
                     color: Colors.red,
-              onTap: () => _navigate(context, 'Cerrar Sesión'),
-            ),
-            _createDrawerItem(
+                    onTap: () => _navigate(context, 'Cerrar Sesión'),
+                  ),
+                  _createDrawerItem(
                     icon: Icons.exit_to_app,
-              text: 'Salir',
+                    text: 'Salir',
                     description: 'Cerrar la aplicación',
                     color: Colors.redAccent,
-              onTap: () => _showExitWarning(context),
+                    onTap: () => _showExitWarning(context),
                   ),
                 ],
               ),
@@ -3540,9 +3674,9 @@ class MateManiaDrawer extends StatelessWidget {
 
   Widget _createDrawerItem({
     required IconData icon,
-      required String text,
+    required String text,
     required String description,
-      required Color color,
+    required Color color,
     required GestureTapCallback onTap,
   }) {
     return Container(
@@ -3560,14 +3694,14 @@ class MateManiaDrawer extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: Icon(
-        icon,
+            icon,
             color: Colors.white,
             size: 26,
           ),
-      ),
-      title: Text(
-        text,
-        style: TextStyle(
+        ),
+        title: Text(
+          text,
+          style: TextStyle(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -3585,7 +3719,7 @@ class MateManiaDrawer extends StatelessWidget {
           color: Colors.white54,
           size: 16,
         ),
-      onTap: onTap,
+        onTap: onTap,
       ),
     );
   }
@@ -3668,7 +3802,7 @@ class MateManiaDrawer extends StatelessWidget {
                   hintText: "Nueva contraseña",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
-              ),
+                  ),
                   filled: true,
                   fillColor: Colors.grey[100],
                 ),
