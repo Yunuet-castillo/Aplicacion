@@ -1214,103 +1214,99 @@ class _AchievementsPage extends StatelessWidget {
 class _ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 30),
-              // Sección de foto de perfil
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 15,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: Image.network(
-                        'https://via.placeholder.com/150',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(
-                            Icons.person,
-                            size: 80,
-                            color: Colors.purple[300],
-                          );
-                        },
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 30),
+            // Sección de foto de perfil
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 15,
+                        offset: Offset(0, 5),
                       ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: Image.network(
+                      'https://via.placeholder.com/150',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.person,
+                          size: 80,
+                          color: Colors.purple[300],
+                        );
+                      },
                     ),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.purple[800],
-                      radius: 20,
-                      child: IconButton(
-                        icon: Icon(Icons.camera_alt,
-                            color: Colors.white, size: 20),
-                        onPressed: () {
-                          // Lógica para cambiar la foto
-                        },
-                      ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.purple[800],
+                    radius: 20,
+                    child: IconButton(
+                      icon:
+                          Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                      onPressed: () {
+                        // Lógica para cambiar la foto
+                      },
                     ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            // Información del usuario
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  _buildInfoCard(
+                    title: "Información Personal",
+                    children: [
+                      _buildInfoRow(Icons.person, "Nombre", "Yunuet Castillo"),
+                      _buildInfoRow(Icons.cake, "Edad", "12 años"),
+                      _buildInfoRow(
+                          Icons.school, "Escuela", "Primaria Emiliano Zapata"),
+                      _buildInfoRow(Icons.email, "Email", "yunuet@gmail.com"),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  _buildInfoCard(
+                    title: "Estadísticas",
+                    children: [
+                      _buildProgressBar("Nivel", 0.7, "Avanzado"),
+                      SizedBox(height: 15),
+                      _buildProgressBar("Ejercicios Completados", 0.85, "85%"),
+                      SizedBox(height: 15),
+                      _buildProgressBar("Ejercicios Incorrectos", 0.92, "92%"),
+                    ],
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              // Información del usuario
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    _buildInfoCard(
-                      title: "Información Personal",
-                      children: [
-                        _buildInfoRow(
-                            Icons.person, "Nombre", "Yunuet Castillo"),
-                        _buildInfoRow(Icons.cake, "Edad", "12 años"),
-                        _buildInfoRow(Icons.school, "Escuela",
-                            "Primaria Emiliano Zapata"),
-                        _buildInfoRow(Icons.email, "Email", "yunuet@gmail.com"),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    _buildInfoCard(
-                      title: "Estadísticas",
-                      children: [
-                        _buildProgressBar("Nivel", 0.7, "Avanzado"),
-                        SizedBox(height: 15),
-                        _buildProgressBar(
-                            "Ejercicios Completados", 0.85, "85%"),
-                        SizedBox(height: 15),
-                        _buildProgressBar("Ejercicos Incorrectos", 0.92, "92%"),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 30),
-            ],
-          ),
+            ),
+            SizedBox(height: 30),
+          ],
         ),
       ),
     );
@@ -1436,97 +1432,109 @@ class TrainingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Entrenamiento"),
-        backgroundColor: Colors.blueAccent,
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.lightBlue.shade200, Colors.purple.shade100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Modo de Entrenamiento",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              // AppBar personalizado
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    Text(
+                      "Entrenamiento",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 30),
-              Text(
-                "Selecciona una operación para practicar:",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white70,
+
+              // Descripción
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: Text(
+                  "Selecciona una operación para practicar",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white.withOpacity(0.8),
+                    letterSpacing: 0.5,
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 30),
-              Column(
-                children: [
-                  _buildTrainingButton(
-                    context,
-                    title: "Suma",
-                    icon: Icons.add,
-                    color: Colors.greenAccent,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OperationPage(operation: '+'),
+
+              SizedBox(height: 20),
+
+              // Contenedor principal con fondo semi-transparente
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 20,
+                        offset: Offset(0, 10),
                       ),
-                    ),
+                    ],
                   ),
-                  SizedBox(height: 20),
-                  _buildTrainingButton(
-                    context,
-                    title: "Resta",
-                    icon: Icons.remove,
-                    color: Colors.orangeAccent,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OperationPage(operation: '-'),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildOperationCard(
+                        context,
+                        title: "Sumas",
+                        description: "Practica operaciones básicas de suma",
+                        icon: Icons.add_circle_outline,
+                        color: Color(0xFF4CAF50),
+                        operation: '+',
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  _buildTrainingButton(
-                    context,
-                    title: "Multiplicación",
-                    icon: Icons.close,
-                    color: Colors.pinkAccent,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OperationPage(operation: '*'),
+                      _buildOperationCard(
+                        context,
+                        title: "Restas",
+                        description: "Mejora tus habilidades de resta",
+                        icon: Icons.remove_circle_outline,
+                        color: Color(0xFFFF9800),
+                        operation: '-',
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  _buildTrainingButton(
-                    context,
-                    title: "División",
-                    icon: Icons.horizontal_rule,
-                    color: Colors.blueAccent,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OperationPage(operation: '/'),
+                      _buildOperationCard(
+                        context,
+                        title: "Multiplicación",
+                        description: "Practica las tablas de multiplicar",
+                        icon: Icons.close,
+                        color: Color(0xFFE91E63),
+                        operation: '*',
                       ),
-                    ),
+                      _buildOperationCard(
+                        context,
+                        title: "División",
+                        description: "Aprende a dividir paso a paso",
+                        icon: Icons.horizontal_rule,
+                        color: Color(0xFF2196F3),
+                        operation: '/',
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ],
           ),
@@ -1535,43 +1543,126 @@ class TrainingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTrainingButton(
+  Widget _buildOperationCard(
     BuildContext context, {
     required String title,
+    required String description,
     required IconData icon,
     required Color color,
-    required VoidCallback onTap,
+    required String operation,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(2, 4),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OperationPage(operation: operation),
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white, size: 28),
-            SizedBox(width: 10),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+          ),
+          borderRadius: BorderRadius.circular(25),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  color.withOpacity(0.9),
+                  color.withOpacity(0.7),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: Offset(0, 8),
+                ),
+              ],
             ),
-          ],
+            child: Row(
+              children: [
+                // Icono con fondo de cristal
+                Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+                SizedBox(width: 20),
+                // Texto
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black26,
+                              offset: Offset(0, 2),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Flecha con fondo de cristal
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -1580,584 +1671,458 @@ class TrainingPage extends StatelessWidget {
 
 class OperationPage extends StatefulWidget {
   final String operation;
-
   OperationPage({required this.operation});
 
   @override
   _OperationPageState createState() => _OperationPageState();
 }
 
-class _OperationPageState extends State<OperationPage> {
+class _OperationPageState extends State<OperationPage>
+    with SingleTickerProviderStateMixin {
   late int num1;
   late int num2;
   late int correctAnswer;
   late List<int> options;
-  String? selectedOption;
-  int attemptsLeft = 2; // Máximo dos intentos
+  int? selectedAnswer;
+  int attemptsLeft = 2;
+  bool showFeedback = false;
+  bool isCorrect = false;
+  int correctStreak = 0;
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    generateExercise();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(_controller);
+    generateNewProblem();
   }
 
-  void generateExercise() {
-    final random = Random();
-    num1 = random.nextInt(10) + 1;
-    num2 = random.nextInt(10) + 1;
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void generateNewProblem() {
+    Random random = Random();
+    if (widget.operation == '/') {
+      num2 = random.nextInt(10) + 1;
+      num1 = num2 * (random.nextInt(10) + 1);
+      correctAnswer = num1 ~/ num2;
+    } else {
+      num1 = random.nextInt(20) + 1;
+      num2 = random.nextInt(20) + 1;
+      switch (widget.operation) {
+        case '+':
+          correctAnswer = num1 + num2;
+          break;
+        case '-':
+          if (num2 > num1) {
+            int temp = num1;
+            num1 = num2;
+            num2 = temp;
+          }
+          correctAnswer = num1 - num2;
+          break;
+        case '*':
+          correctAnswer = num1 * num2;
+          break;
+        default:
+          correctAnswer = 0;
+      }
+    }
+
+    options = [correctAnswer];
+    while (options.length < 4) {
+      int option = correctAnswer + random.nextInt(11) - 5;
+      if (!options.contains(option) && option >= 0) {
+        options.add(option);
+      }
+    }
+    options.shuffle();
+    selectedAnswer = null;
+    showFeedback = false;
+  }
+
+  void checkAnswer() {
+    if (selectedAnswer == null) return;
+
+    setState(() {
+      isCorrect = selectedAnswer == correctAnswer;
+      showFeedback = true;
+
+      if (isCorrect) {
+        correctStreak++;
+      } else {
+        attemptsLeft--;
+        correctStreak = 0;
+      }
+
+      if (attemptsLeft == 0 || isCorrect) {
+        Future.delayed(Duration(seconds: 2), () {
+          if (mounted) {
+            setState(() {
+              if (attemptsLeft == 0) attemptsLeft = 2;
+              generateNewProblem();
+            });
+          }
+        });
+      }
+    });
+
+    _controller.forward().then((_) => _controller.reverse());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String operationTitle = '';
+    Color primaryColor;
+    Color secondaryColor;
+    IconData operationIcon;
 
     switch (widget.operation) {
       case '+':
-        correctAnswer = num1 + num2;
+        operationTitle = 'Práctica de Sumas';
+        primaryColor = Color(0xFF2E7D32); // Verde oscuro
+        secondaryColor = Color(0xFF81C784); // Verde claro
+        operationIcon = Icons.add_circle_outline;
         break;
       case '-':
-        correctAnswer = num1 - num2;
+        operationTitle = 'Práctica de Restas';
+        primaryColor = Color(0xFFE65100); // Naranja oscuro
+        secondaryColor = Color(0xFFFFB74D); // Naranja claro
+        operationIcon = Icons.remove_circle_outline;
         break;
       case '*':
-        correctAnswer = num1 * num2;
+        operationTitle = 'Práctica de Multiplicación';
+        primaryColor = Color(0xFFC2185B); // Rosa oscuro
+        secondaryColor = Color(0xFFF06292); // Rosa claro
+        operationIcon = Icons.close;
         break;
       case '/':
-        num1 = num1 * num2;
-        correctAnswer = num1 ~/ num2;
+        operationTitle = 'Práctica de División';
+        primaryColor = Color(0xFF1565C0); // Azul oscuro
+        secondaryColor = Color(0xFF64B5F6); // Azul claro
+        operationIcon = Icons.horizontal_rule;
         break;
       default:
-        correctAnswer = 0;
+        operationTitle = 'Práctica';
+        primaryColor = Color(0xFF7B1FA2); // Morado oscuro
+        secondaryColor = Color(0xFFBA68C8); // Morado claro
+        operationIcon = Icons.calculate;
     }
 
-    options = [
-      correctAnswer,
-      correctAnswer + random.nextInt(5) + 1,
-      correctAnswer - random.nextInt(5) - 1,
-      correctAnswer + random.nextInt(10) - 5
-    ];
-
-    options.shuffle();
-    selectedOption = null;
-    attemptsLeft = 2; // Reiniciar intentos en una nueva pregunta
-
-    setState(() {});
-  }
-
-  void checkAnswer() {
-    if (selectedOption == correctAnswer.toString()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("¡Excelente, Respuesta correcta!"),
-          backgroundColor: Colors.green,
-        ),
-      );
-      generateExercise();
-    } else {
-      attemptsLeft--;
-
-      if (attemptsLeft > 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "Respuesta incorrecta, Intentalo de nuevo. Te quedan $attemptsLeft intentos."),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "¡Se acabaron los intentos! La respuesta correcta era $correctAnswer."),
-            backgroundColor: Colors.red,
-          ),
-        );
-        Future.delayed(Duration(seconds: 2), generateExercise);
-      }
-    }
-
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Practicando ${widget.operation}"),
-        backgroundColor: Colors.blueAccent,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "$num1 ${widget.operation} $num2 = ?",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Column(
-              children: options.map((option) {
-                return RadioListTile<String>(
-                  title: Text(option.toString()),
-                  value: option.toString(),
-                  groupValue: selectedOption,
-                  onChanged: attemptsLeft > 0
-                      ? (value) {
-                          setState(() {
-                            selectedOption = value;
-                          });
-                        }
-                      : null, // Bloquear selección si no hay intentos
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: (selectedOption != null && attemptsLeft > 0)
-                  ? checkAnswer
-                  : null,
-              child: Text("Confirmar"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class EasyLevelPage extends StatefulWidget {
-  @override
-  _EasyLevelPageState createState() => _EasyLevelPageState();
-}
-
-class _EasyLevelPageState extends State<EasyLevelPage>
-    with SingleTickerProviderStateMixin {
-  int num1 = 0;
-  int num2 = 0;
-  int correctAnswer = 0;
-  String operation = "";
-  String userAnswer = "";
-  int questionsAsked = 0;
-  int totalQuestions = 0;
-  int correctCount = 0;
-  int incorrectCount = 0;
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      askQuestionCount();
-    });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void askQuestionCount() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-          titlePadding: EdgeInsets.zero,
-          title: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Color(0xFF7B1FA2),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "¿Cuántas operaciones?",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.red.withOpacity(0.2),
-                    shape: CircleBorder(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildOptionButton(
-                  5, "5 ejercicios", Icons.looks_one, Colors.green),
-              SizedBox(height: 10),
-              _buildOptionButton(
-                  10, "10 ejercicios", Icons.looks_two, Colors.orange),
-              SizedBox(height: 10),
-              _buildOptionButton(
-                  15, "15 ejercicios", Icons.looks_3, Colors.purple),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildOptionButton(
-      int count, String text, IconData icon, Color color) {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: Icon(icon, color: Colors.white),
-        label: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        onPressed: () => setQuestionCount(count),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          padding: EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 5,
-        ),
-      ),
-    );
-  }
-
-  void setQuestionCount(int count) {
-    setState(() {
-      totalQuestions = count;
-      correctCount = 0;
-      incorrectCount = 0;
-      questionsAsked = 0;
-      userAnswer = "";
-    });
-    Navigator.pop(context);
-    generateExercise();
-  }
-
-  void generateExercise() {
-    final random = Random();
-    setState(() {
-      num1 = random.nextInt(10) + 1;
-      num2 = random.nextInt(10) + 1;
-      final operations = ['+', '-', '*'];
-      operation = operations[random.nextInt(operations.length)];
-
-      switch (operation) {
-        case '+':
-          correctAnswer = num1 + num2;
-          break;
-        case '-':
-          correctAnswer = num1 - num2;
-          break;
-        case '*':
-          correctAnswer = num1 * num2;
-          break;
-      }
-    });
-  }
-
-  void checkAnswer() {
-    if (userAnswer.isEmpty) return;
-
-    _animationController.forward().then((_) {
-      _animationController.reverse();
-    });
-
-    setState(() {
-      if (int.tryParse(userAnswer) == correctAnswer) {
-        correctCount++;
-      } else {
-        incorrectCount++;
-      }
-      questionsAsked++;
-      userAnswer = "";
-    });
-
-    if (questionsAsked < totalQuestions) {
-      generateExercise();
-    } else {
-      showResults();
-    }
-  }
-
-  void showResults() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        double accuracy = (correctCount / totalQuestions) * 100;
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            "¡Ejercicio Completado!",
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildResultItem(
-                "Respuestas Correctas",
-                correctCount,
-                Icons.check_circle,
-                Colors.green,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Respuestas Incorrectas",
-                incorrectCount,
-                Icons.cancel,
-                Colors.red,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Volver a intentar",
-                style: TextStyle(
-                  color: Color(0xFF7B1FA2),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                askQuestionCount();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildResultItem(String label, int value, IconData icon, Color color,
-      {bool isPercentage = false}) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          SizedBox(width: 10),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Spacer(),
-          Text(
-            isPercentage ? "$value%" : value.toString(),
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Nivel Fácil"),
-        backgroundColor: Color(0xFF7B1FA2),
-        elevation: 0,
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              primaryColor,
+              secondaryColor,
+            ],
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              // Indicador de progreso
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
+              // AppBar personalizado
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Progreso",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "$questionsAsked/$totalQuestions",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    IconButton(
+                      icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                    SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: totalQuestions > 0
-                          ? questionsAsked / totalQuestions
-                          : 0,
-                      backgroundColor: Colors.white.withOpacity(0.3),
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      minHeight: 10,
-                      borderRadius: BorderRadius.circular(5),
+                    Icon(operationIcon, color: Colors.white, size: 30),
+                    SizedBox(width: 8),
+                    Text(
+                      operationTitle,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: AnimatedBuilder(
-                      animation: _scaleAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _scaleAnimation.value,
-                          child: child,
-                        );
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    Spacer(),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(30),
-                            margin: EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
+                          Icon(Icons.local_fire_department,
+                              color: Colors.amber),
+                          SizedBox(width: 4),
+                          Text(
+                            '$correctStreak',
+                            style: TextStyle(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 10,
-                                  offset: Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "$num1 $operation $num2 = ?",
-                                  style: TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF7B1FA2),
-                                  ),
-                                ),
-                                SizedBox(height: 30),
-                                Container(
-                                  width: 150,
-                                  child: TextField(
-                                    keyboardType: TextInputType.number,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF7B1FA2),
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "?",
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey[400],
-                                        fontSize: 30,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey[100],
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        userAnswer = value;
-                                      });
-                                    },
-                                    onSubmitted: (value) {
-                                      if (value.isNotEmpty) {
-                                        checkAnswer();
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: ElevatedButton(
-                              onPressed:
-                                  userAnswer.isNotEmpty ? checkAnswer : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF7B1FA2),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 50,
-                                  vertical: 15,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                elevation: 5,
-                              ),
-                              child: Text(
-                                "Comprobar",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                     ),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // Tarjeta de operación
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 20),
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withOpacity(0.2),
+                              blurRadius: 15,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                          border: Border.all(
+                            color: primaryColor.withOpacity(0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 15),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.timer_outlined,
+                                      color: primaryColor, size: 20),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Intentos restantes: $attemptsLeft",
+                                    style: TextStyle(
+                                      color: primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildNumberContainer(
+                                    num1.toString(), primaryColor),
+                                SizedBox(width: 12),
+                                _buildOperationSymbol(
+                                    widget.operation, primaryColor),
+                                SizedBox(width: 12),
+                                _buildNumberContainer(
+                                    num2.toString(), primaryColor),
+                                SizedBox(width: 12),
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "=",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Container(
+                                  width: 45,
+                                  height: 45,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        primaryColor.withOpacity(0.2),
+                                        primaryColor.withOpacity(0.1),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(
+                                      color: primaryColor.withOpacity(0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "?",
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 30),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: options
+                                    .map((option) => Container(
+                                          margin: EdgeInsets.only(bottom: 10),
+                                          decoration: BoxDecoration(
+                                            color: selectedAnswer == option
+                                                ? primaryColor.withOpacity(0.1)
+                                                : Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: selectedAnswer == option
+                                                  ? primaryColor
+                                                  : Colors.grey.shade300,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          child: RadioListTile<int>(
+                                            value: option,
+                                            groupValue: selectedAnswer,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedAnswer = value;
+                                              });
+                                            },
+                                            title: Text(
+                                              option.toString(),
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: selectedAnswer == option
+                                                    ? primaryColor
+                                                    : Colors.black87,
+                                                fontWeight:
+                                                    selectedAnswer == option
+                                                        ? FontWeight.bold
+                                                        : FontWeight.normal,
+                                              ),
+                                            ),
+                                            activeColor: primaryColor,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                            SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: selectedAnswer != null
+                                  ? () {
+                                      checkAnswer();
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 5,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.check_circle_outline, size: 24),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Comprobar',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (showFeedback)
+                              Container(
+                                margin: EdgeInsets.only(top: 20),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 20),
+                                decoration: BoxDecoration(
+                                  color: isCorrect
+                                      ? Colors.green.withOpacity(0.2)
+                                      : Colors.red.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color: isCorrect
+                                        ? Colors.green.withOpacity(0.3)
+                                        : Colors.red.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      isCorrect
+                                          ? Icons.check_circle
+                                          : Icons.error_outline,
+                                      color:
+                                          isCorrect ? Colors.green : Colors.red,
+                                      size: 24,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      isCorrect
+                                          ? '¡Correcto! ¡Muy bien!'
+                                          : 'Incorrecto. Inténtalo de nuevo.',
+                                      style: TextStyle(
+                                        color: isCorrect
+                                            ? Colors.green
+                                            : Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -2167,455 +2132,68 @@ class _EasyLevelPageState extends State<EasyLevelPage>
       ),
     );
   }
-}
 
-class IntermediateLevelPage extends StatefulWidget {
-  @override
-  _IntermediateLevelPageState createState() => _IntermediateLevelPageState();
-}
-
-class _IntermediateLevelPageState extends State<IntermediateLevelPage>
-    with SingleTickerProviderStateMixin {
-  int num1 = 0;
-  int num2 = 0;
-  int correctAnswer = 0;
-  String operation = "";
-  String userAnswer = "";
-  int questionsAsked = 0;
-  int totalQuestions = 0;
-  int correctCount = 0;
-  int incorrectCount = 0;
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      askQuestionCount();
-    });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void askQuestionCount() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-          titlePadding: EdgeInsets.zero,
-          title: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Color(0xFF7B1FA2),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "¿Cuántas operaciones?",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.red.withOpacity(0.2),
-                    shape: CircleBorder(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildOptionButton(
-                  5, "5 ejercicios", Icons.looks_one, Colors.green),
-              SizedBox(height: 10),
-              _buildOptionButton(
-                  10, "10 ejercicios", Icons.looks_two, Colors.orange),
-              SizedBox(height: 10),
-              _buildOptionButton(
-                  15, "15 ejercicios", Icons.looks_3, Colors.purple),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildOptionButton(
-      int count, String text, IconData icon, Color color) {
+  Widget _buildNumberContainer(String number, Color color) {
     return Container(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: Icon(icon, color: Colors.white),
-        label: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        onPressed: () => setQuestionCount(count),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          padding: EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 5,
-        ),
-      ),
-    );
-  }
-
-  void setQuestionCount(int count) {
-    setState(() {
-      totalQuestions = count;
-      correctCount = 0;
-      incorrectCount = 0;
-      questionsAsked = 0;
-      userAnswer = "";
-    });
-    Navigator.pop(context);
-    generateExercise();
-  }
-
-  void generateExercise() {
-    final random = Random();
-    setState(() {
-      num1 = random.nextInt(50) + 50; // Números entre 50 y 99
-      num2 = random.nextInt(50) + 50;
-      final operations = ['+', '-', '*', '/'];
-      operation = operations[random.nextInt(operations.length)];
-
-      switch (operation) {
-        case '+':
-          correctAnswer = num1 + num2;
-          break;
-        case '-':
-          correctAnswer = num1 - num2;
-          break;
-        case '*':
-          correctAnswer = num1 * num2;
-          break;
-        case '/':
-          // Asegurar división exacta
-          num1 = num1 * num2;
-          correctAnswer = num1 ~/ num2;
-          break;
-      }
-    });
-  }
-
-  void checkAnswer() {
-    if (userAnswer.isEmpty) return;
-
-    _animationController.forward().then((_) {
-      _animationController.reverse();
-    });
-
-    setState(() {
-      if (int.tryParse(userAnswer) == correctAnswer) {
-        correctCount++;
-      } else {
-        incorrectCount++;
-      }
-      questionsAsked++;
-      userAnswer = "";
-    });
-
-    if (questionsAsked < totalQuestions) {
-      generateExercise();
-    } else {
-      showResults();
-    }
-  }
-
-  void showResults() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        double accuracy = (correctCount / totalQuestions) * 100;
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            "¡Ejercicio Completado!",
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildResultItem(
-                "Respuestas Correctas",
-                correctCount,
-                Icons.check_circle,
-                Colors.green,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Respuestas Incorrectas",
-                incorrectCount,
-                Icons.cancel,
-                Colors.red,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Volver a intentar",
-                style: TextStyle(
-                  color: Color(0xFF7B1FA2),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                askQuestionCount();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildResultItem(String label, int value, IconData icon, Color color,
-      {bool isPercentage = false}) {
-    return Container(
-      padding: EdgeInsets.all(10),
+      width: 60,
+      height: 60,
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 2,
+        ),
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          SizedBox(width: 10),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
-            ),
+      child: Center(
+        child: Text(
+          number,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: color,
           ),
-          Spacer(),
-          Text(
-            isPercentage ? "$value%" : value.toString(),
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOperationSymbol(String operation, Color color) {
+    String symbol = operation;
+    switch (operation) {
+      case '*':
+        symbol = '×';
+        break;
+      case '/':
+        symbol = '÷';
+        break;
+    }
+
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color, color.withOpacity(0.7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 8,
+            offset: Offset(0, 4),
           ),
         ],
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Nivel Intermedio"),
-        backgroundColor: Color(0xFF7B1FA2),
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Indicador de progreso
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Progreso",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "$questionsAsked/$totalQuestions",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: totalQuestions > 0
-                          ? questionsAsked / totalQuestions
-                          : 0,
-                      backgroundColor: Colors.white.withOpacity(0.3),
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      minHeight: 10,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: AnimatedBuilder(
-                      animation: _scaleAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _scaleAnimation.value,
-                          child: child,
-                        );
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(30),
-                            margin: EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 10,
-                                  offset: Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "$num1 $operation $num2 = ?",
-                                  style: TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF7B1FA2),
-                                  ),
-                                ),
-                                SizedBox(height: 30),
-                                Container(
-                                  width: 150,
-                                  child: TextField(
-                                    keyboardType: TextInputType.number,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF7B1FA2),
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "?",
-                                      hintStyle: TextStyle(
-                                        color: Colors.grey[400],
-                                        fontSize: 30,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey[100],
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        userAnswer = value;
-                                      });
-                                    },
-                                    onSubmitted: (value) {
-                                      if (value.isNotEmpty) {
-                                        checkAnswer();
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: ElevatedButton(
-                              onPressed:
-                                  userAnswer.isNotEmpty ? checkAnswer : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF7B1FA2),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 50,
-                                  vertical: 15,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                elevation: 5,
-                              ),
-                              child: Text(
-                                "Comprobar",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+      child: Center(
+        child: Text(
+          symbol,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ),
@@ -2629,425 +2207,33 @@ class HardLevelPage extends StatefulWidget {
 }
 
 class _HardLevelPageState extends State<HardLevelPage> {
-  int num1 = 0;
-  int num2 = 0;
-  double correctAnswer = 0.0;
-  String operation = "";
-  String userAnswer = "";
-  int questionsAsked = 0;
-  int totalQuestions = 0;
-  int correctCount = 0;
-  int incorrectCount = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      askQuestionCount();
-    });
-  }
-
-  void setQuestionCount(int count) {
-    setState(() {
-      totalQuestions = count;
-      correctCount = 0;
-      incorrectCount = 0;
-      questionsAsked = 0;
-      userAnswer = "";
-    });
-    Navigator.pop(context);
-    generateExercise();
-  }
-
-  void generateExercise() {
-    final random = Random();
-    setState(() {
-      num1 = random.nextInt(90) + 10; // Números entre 10 y 99
-      num2 = random.nextInt(90) + 10;
-
-      List<String> operations = ['+', '-', '*', '/'];
-      operation = operations[random.nextInt(operations.length)];
-
-      switch (operation) {
-        case '+':
-          correctAnswer = (num1 + num2).toDouble();
-          break;
-        case '-':
-          correctAnswer = (num1 - num2).toDouble();
-          break;
-        case '*':
-          correctAnswer = (num1 * num2).toDouble();
-          break;
-        case '/':
-          // Asegurar división exacta
-          num1 = (num1 * num2);
-          correctAnswer = num1 / num2;
-          break;
-      }
-    });
-  }
-
-  void checkAnswer() {
-    if (userAnswer.isEmpty) return;
-
-    double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
-    if (parsedAnswer == correctAnswer) {
-      correctCount++;
-    } else {
-      incorrectCount++;
-    }
-
-    setState(() {
-      questionsAsked++;
-      userAnswer = "";
-    });
-
-    if (questionsAsked >= totalQuestions) {
-      showResults();
-    } else {
-      generateExercise();
-    }
-  }
-
-  void showResults() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        double accuracy = (correctCount / totalQuestions) * 100;
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            "¡Ejercicio Completado!",
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildResultItem(
-                "Respuestas Correctas",
-                correctCount,
-                Icons.check_circle,
-                Colors.green,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Respuestas Incorrectas",
-                incorrectCount,
-                Icons.cancel,
-                Colors.red,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Volver a intentar",
-                style: TextStyle(
-                  color: Color(0xFF7B1FA2),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                askQuestionCount();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildResultItem(String label, int value, IconData icon, Color color,
-      {bool isPercentage = false}) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          SizedBox(width: 10),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Spacer(),
-          Text(
-            isPercentage ? "$value%" : value.toString(),
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Nivel Difícil"),
-        backgroundColor: Color(0xFF7B1FA2),
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Indicador de progreso
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Progreso",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "$questionsAsked/$totalQuestions",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: totalQuestions > 0
-                          ? questionsAsked / totalQuestions
-                          : 0,
-                      backgroundColor: Colors.white.withOpacity(0.3),
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      minHeight: 10,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(30),
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 10,
-                                offset: Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "$num1 $operation $num2 = ?",
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF7B1FA2),
-                                ),
-                              ),
-                              SizedBox(height: 30),
-                              Container(
-                                width: 150,
-                                child: TextField(
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF7B1FA2),
-                                  ),
-                                  decoration: InputDecoration(
-                                    hintText: "?",
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey[400],
-                                      fontSize: 30,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(15),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey[100],
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      userAnswer = value;
-                                    });
-                                  },
-                                  onSubmitted: (value) {
-                                    if (value.isNotEmpty) {
-                                      checkAnswer();
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: ElevatedButton(
-                            onPressed:
-                                userAnswer.isNotEmpty ? checkAnswer : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF7B1FA2),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 50,
-                                vertical: 15,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              elevation: 5,
-                            ),
-                            child: Text(
-                              "Comprobar",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return Container(); // Placeholder return, actual implementation needed
   }
+}
 
-  void askQuestionCount() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-          titlePadding: EdgeInsets.zero,
-          title: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Color(0xFF7B1FA2),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "¿Cuántas operaciones quieres hacer?",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.red.withOpacity(0.2),
-                    shape: CircleBorder(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildOptionButton(
-                  5, "5 ejercicios", Icons.looks_one, Colors.green),
-              SizedBox(height: 10),
-              _buildOptionButton(
-                  10, "10 ejercicios", Icons.looks_two, Colors.orange),
-              SizedBox(height: 10),
-              _buildOptionButton(
-                  15, "15 ejercicios", Icons.looks_3, Colors.purple),
-            ],
-          ),
-        );
-      },
-    );
+class EasyLevelPage extends StatefulWidget {
+  @override
+  _EasyLevelPageState createState() => _EasyLevelPageState();
+}
+
+class _EasyLevelPageState extends State<EasyLevelPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(); // Placeholder return, actual implementation needed
   }
+}
 
-  Widget _buildOptionButton(
-      int count, String text, IconData icon, Color color) {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: Icon(icon, color: Colors.white),
-        label: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        onPressed: () => setQuestionCount(count),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          padding: EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          elevation: 5,
-        ),
-      ),
-    );
+class IntermediateLevelPage extends StatefulWidget {
+  @override
+  _IntermediateLevelPageState createState() => _IntermediateLevelPageState();
+}
+
+class _IntermediateLevelPageState extends State<IntermediateLevelPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(); // Placeholder return, actual implementation needed
   }
 }
 
@@ -3057,495 +2243,11 @@ class TimedLevelPage extends StatefulWidget {
 }
 
 class _TimedLevelPageState extends State<TimedLevelPage> {
-  late int num1;
-  late int num2;
-  late double correctAnswer;
-  String operation = "";
-  String userAnswer = "";
-  int questionsAsked = 0;
-  final int totalQuestions = 20; // Fijo en 20 operaciones
-  int correctCount = 0;
-  int incorrectCount = 0;
-  int timeLeft = 30; // 30 segundos
-  late Timer timer;
-  bool isTimerRunning = false;
-
-  @override
-  void initState() {
-    super.initState();
-    num1 = 0;
-    num2 = 0;
-    correctAnswer = 0.0;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showStartDialog();
-    });
-  }
-
-  @override
-  void dispose() {
-    if (isTimerRunning) {
-      timer.cancel();
-    }
-    super.dispose();
-  }
-
-  void showStartDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-          title: Text(
-            "¡Modo Contra Reloj!",
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.timer,
-                size: 60,
-                color: Color(0xFF7B1FA2),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "Tienes 30 segundos para resolver\n20 operaciones matemáticas",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "¿Estás listo?",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF7B1FA2),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Cancelar",
-                style: TextStyle(color: Colors.grey),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-              child: Text("¡Comenzar!"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF7B1FA2),
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                startGame();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void startGame() {
-    setState(() {
-      timeLeft = 30;
-      questionsAsked = 0;
-      correctCount = 0;
-      incorrectCount = 0;
-      isTimerRunning = true;
-    });
-    generateExercise();
-    startTimer();
-  }
-
-  void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (timeLeft > 0) {
-          timeLeft--;
-        } else {
-          timer.cancel();
-          showResults();
-        }
-      });
-    });
-  }
-
-  void generateExercise() {
-    final random = Random();
-    setState(() {
-      num1 = random.nextInt(90) + 10; // Números entre 10 y 99
-      num2 = random.nextInt(90) + 10;
-
-      List<String> operations = ['+', '-', '*', '/'];
-      operation = operations[random.nextInt(operations.length)];
-
-      switch (operation) {
-        case '+':
-          correctAnswer = (num1 + num2).toDouble();
-          break;
-        case '-':
-          correctAnswer = (num1 - num2).toDouble();
-          break;
-        case '*':
-          correctAnswer = (num1 * num2).toDouble();
-          break;
-        case '/':
-          // Asegurar división exacta
-          num1 = (num1 * num2);
-          correctAnswer = num1 / num2;
-          break;
-      }
-    });
-  }
-
-  void checkAnswer() {
-    if (userAnswer.isEmpty) return;
-
-    double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
-    if (parsedAnswer == correctAnswer) {
-      correctCount++;
-    } else {
-      incorrectCount++;
-    }
-
-    setState(() {
-      questionsAsked++;
-      userAnswer = "";
-    });
-
-    if (questionsAsked >= totalQuestions) {
-      showResults();
-    } else {
-      generateExercise();
-    }
-  }
-
-  void showResults() {
-    if (isTimerRunning) {
-      timer.cancel();
-      isTimerRunning = false;
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        double accuracy =
-            questionsAsked > 0 ? (correctCount / questionsAsked * 100) : 0;
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            "¡Tiempo Terminado!",
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildResultItem(
-                "Operaciones Realizadas",
-                questionsAsked,
-                Icons.calculate,
-                Colors.purple,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Respuestas Correctas",
-                correctCount,
-                Icons.check_circle,
-                Colors.green,
-              ),
-              SizedBox(height: 10),
-              _buildResultItem(
-                "Respuestas Incorrectas",
-                incorrectCount,
-                Icons.cancel,
-                Colors.red,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Volver a intentar",
-                style: TextStyle(
-                  color: Color(0xFF7B1FA2),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                showStartDialog();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
+  // Implementation of the TimedLevelPage state
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Contra Reloj"),
-        backgroundColor: Color(0xFF7B1FA2),
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Timer display mejorado
-              Container(
-                margin: EdgeInsets.all(20),
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.timer,
-                      color: timeLeft <= 5 ? Colors.red : Color(0xFF7B1FA2),
-                      size: 30,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      timeLeft.toString(),
-                      style: TextStyle(
-                        color: timeLeft <= 5 ? Colors.red : Color(0xFF7B1FA2),
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      "segundos",
-                      style: TextStyle(
-                        color: Color(0xFF7B1FA2),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Progreso
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Progreso",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "$questionsAsked/$totalQuestions",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: totalQuestions > 0
-                          ? questionsAsked / totalQuestions
-                          : 0,
-                      backgroundColor: Colors.white.withOpacity(0.3),
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      minHeight: 10,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                  ],
-                ),
-              ),
-              // Operación matemática
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(30),
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 10,
-                                offset: Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "$num1 $operation $num2 = ?",
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF7B1FA2),
-                                ),
-                              ),
-                              SizedBox(height: 30),
-                              Container(
-                                width: 150,
-                                child: TextField(
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF7B1FA2),
-                                  ),
-                                  decoration: InputDecoration(
-                                    hintText: "?",
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey[400],
-                                      fontSize: 30,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(15),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey[100],
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      userAnswer = value;
-                                    });
-                                  },
-                                  onSubmitted: (value) {
-                                    if (value.isNotEmpty) {
-                                      checkAnswer();
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30),
-                        // Botón de verificar
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: ElevatedButton(
-                            onPressed:
-                                userAnswer.isNotEmpty ? checkAnswer : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF7B1FA2),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 50,
-                                vertical: 15,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              elevation: 5,
-                            ),
-                            child: Text(
-                              "Comprobar",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildResultItem(String label, int value, IconData icon, Color color,
-      {bool isPercentage = false}) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          SizedBox(width: 10),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Spacer(),
-          Text(
-            isPercentage ? "$value%" : value.toString(),
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ],
-      ),
-    );
+    // Implementation of the build method
+    return Container(); // Placeholder return, actual implementation needed
   }
 }
 
@@ -3558,113 +2260,69 @@ class MateManiaDrawer extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF7B1FA2),
-              Color(0xFFE1BEE7),
-            ],
+            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
           ),
         ),
-        child: Column(
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
-            Container(
-              padding: EdgeInsets.only(top: 50, bottom: 20),
+            DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.1),
               ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 15,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
                     child: Icon(
                       Icons.person,
-                      size: 60,
+                      size: 40,
                       color: Color(0xFF7B1FA2),
                     ),
                   ),
-                  SizedBox(height: 15),
+                  SizedBox(height: 10),
                   Text(
-                    'Configuración',
+                    'MateManía',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
                     ),
                   ),
                 ],
               ),
             ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                children: [
-                  _createDrawerItem(
-                    icon: Icons.edit,
-                    text: 'Cambiar nombre',
-                    description: 'Actualiza tu nombre de usuario',
-                    color: Colors.green,
-                    onTap: () => _showEditDialog(context, 'nombre'),
-                  ),
-                  _createDrawerItem(
-                    icon: Icons.vpn_key,
-                    text: 'Contraseña',
-                    description: 'Modifica tu contraseña',
-                    color: Colors.orange,
-                    onTap: () => _showPasswordDialog(context),
-                  ),
-                  _createDrawerItem(
-                    icon: Icons.comment,
-                    text: 'Comentarios',
-                    description: 'Deja tus sugerencias',
-                    color: Colors.blue,
-                    onTap: () => _showEditDialog(context, 'comentario'),
-                  ),
-                  _createDrawerItem(
-                    icon: Icons.history,
-                    text: 'Progreso e Historial',
-                    description: 'Revisa tu avance',
-                    color: Colors.purple,
-                    onTap: () => _navigate(context, 'Progreso e Historial'),
-                  ),
-                  Divider(color: Colors.white30, thickness: 1),
-                  _createDrawerItem(
-                    icon: Icons.logout,
-                    text: 'Cerrar Sesión',
-                    description: 'Salir de tu cuenta',
-                    color: Colors.red,
-                    onTap: () => _navigate(context, 'Cerrar Sesión'),
-                  ),
-                  _createDrawerItem(
-                    icon: Icons.exit_to_app,
-                    text: 'Salir',
-                    description: 'Cerrar la aplicación',
-                    color: Colors.redAccent,
-                    onTap: () => _showExitWarning(context),
-                  ),
-                ],
-              ),
+            _buildDrawerItem(
+              context,
+              icon: Icons.settings,
+              title: 'Configuración',
+              onTap: () {
+                // Implementar navegación a configuración
+                Navigator.pop(context);
+              },
             ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                'MateManía v1.0',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
-              ),
+            _buildDrawerItem(
+              context,
+              icon: Icons.help_outline,
+              title: 'Ayuda',
+              onTap: () {
+                // Implementar navegación a ayuda
+                Navigator.pop(context);
+              },
+            ),
+            _buildDrawerItem(
+              context,
+              icon: Icons.exit_to_app,
+              title: 'Cerrar Sesión',
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  (route) => false,
+                );
+              },
             ),
           ],
         ),
@@ -3672,241 +2330,23 @@ class MateManiaDrawer extends StatelessWidget {
     );
   }
 
-  Widget _createDrawerItem({
+  Widget _buildDrawerItem(
+    BuildContext context, {
     required IconData icon,
-    required String text,
-    required String description,
-    required Color color,
-    required GestureTapCallback onTap,
+    required String title,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Container(
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 26,
-          ),
-        ),
-        title: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Text(
-          description,
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-          ),
-        ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          color: Colors.white54,
-          size: 16,
-        ),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  void _showEditDialog(BuildContext context, String title) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-          title: Text(
-            'Cambiar $title',
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: TextField(
-            decoration: InputDecoration(
-              hintText: "Ingrese nuevo $title",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              filled: true,
-              fillColor: Colors.grey[100],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Cancelar",
-                style: TextStyle(color: Colors.grey),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-              child: Text("Guardar"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF7B1FA2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                // Implementar lógica para guardar cambios
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showPasswordDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-          title: Text(
-            'Cambiar contraseña',
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Nueva contraseña",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                ),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Confirmar contraseña",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Cancelar",
-                style: TextStyle(color: Colors.grey),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-              child: Text("Guardar"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF7B1FA2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                // Implementar lógica para cambiar contraseña
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showExitWarning(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-          title: Text(
-            "¿Estás seguro?",
-            style: TextStyle(
-              color: Color(0xFF7B1FA2),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            "¿Realmente deseas salir de MateManía?",
-            style: TextStyle(fontSize: 16),
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                "Cancelar",
-                style: TextStyle(color: Colors.grey),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-              child: Text("Salir"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                // Implementar lógica para salir
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _navigate(BuildContext context, String route) {
-    Navigator.pop(context); // Cierra el drawer
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Navegando a $route...'),
-        backgroundColor: Color(0xFF7B1FA2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
         ),
       ),
+      onTap: onTap,
+      hoverColor: Colors.white.withOpacity(0.1),
     );
-    // Aquí puedes agregar la navegación real a las diferentes rutas
   }
 }
