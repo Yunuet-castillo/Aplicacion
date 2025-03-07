@@ -5,17 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'firebase_options.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ✅ Inicializar Firebase con opciones específicas para cada plataforma
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    // Configuración específica para Web
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyCTAs6zOmZSd_3avM17x62qVU_Gat7dKso",
+        authDomain: "aplicacion-8afa2.firebaseapp.com",
+        projectId: "aplicacion-8afa2",
+        storageBucket: "aplicacion-8afa2.appspot.com", // Corregido
+        messagingSenderId: "1024396750145",
+        appId: "1:1024396750145:web:50f7a262f32f5775fcc5c0",
+      ),
+    );
+  } else {
+    // Configuración para Android/iOS
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  }
   runApp(MateManiaApp());
 }
 
@@ -476,6 +487,24 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  void addUser() {
+    if (_formKey.currentState!.validate()) {
+      FirebaseFirestore.instance.collection('usuarios').add({
+        'nombre': _nameController.text,
+        'fecha_nacimiento': _birthDateController.text,
+        'edad': int.tryParse(_ageController.text) ?? 0,
+        'escuela': _schoolController.text,
+        'correo': _emailController.text,
+        'contraseña': _passwordController
+            .text, // ⚠️ Considera usar hashing en la contraseña
+      }).then((docRef) {
+        print("Usuario agregado con ID: ${docRef.id}");
+      }).catchError((error) {
+        print("Error al agregar usuario: $error");
+      });
+    }
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -490,199 +519,52 @@ class _RegistrationFormState extends State<RegistrationForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Fondo con gradiente
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF7B1FA2),
-                  Color(0xFFE1BEE7),
-                ],
-              ),
-            ),
+      appBar: AppBar(title: Text('Registro de Usuario')),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildTextField(
+                  controller: _nameController,
+                  icon: Icons.person,
+                  label: "Nombre"),
+              _buildDatePickerField(),
+              _buildTextField(
+                  controller: _ageController,
+                  icon: Icons.cake,
+                  label: "Edad",
+                  keyboardType: TextInputType.number),
+              _buildTextField(
+                  controller: _schoolController,
+                  icon: Icons.school,
+                  label: "Escuela"),
+              _buildTextField(
+                  controller: _emailController,
+                  icon: Icons.email,
+                  label: "Correo electrónico",
+                  keyboardType: TextInputType.emailAddress),
+              _buildTextField(
+                  controller: _passwordController,
+                  icon: Icons.lock,
+                  label: "Contraseña",
+                  obscureText: _obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  )),
+              SizedBox(height: 20),
+              ElevatedButton(onPressed: addUser, child: Text('Registrar')),
+            ],
           ),
-          // Patrón de decoración
-          Positioned.fill(
-            child: CustomPaint(
-              painter: BubblePainter(),
-            ),
-          ),
-          // Contenido principal
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    // Botón de regreso
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    // Título
-                    Text(
-                      'Crear Cuenta',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    SizedBox(height: 40),
-                    // Formulario
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            _buildTextField(
-                              controller: _nameController,
-                              icon: Icons.person_outline,
-                              label: "Nombre completo",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu nombre';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            _buildDatePickerField(),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _ageController,
-                              icon: Icons.cake_outlined,
-                              label: "Edad",
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu edad';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _schoolController,
-                              icon: Icons.school_outlined,
-                              label: "Escuela",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu escuela';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _emailController,
-                              icon: Icons.email_outlined,
-                              label: "Correo electrónico",
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || !value.contains('@')) {
-                                  return 'Ingresa un correo válido';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _passwordController,
-                              icon: Icons.lock_outline,
-                              label: "Contraseña",
-                              obscureText: _obscurePassword,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Color(0xFF7B1FA2),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                              validator: (value) {
-                                if (value == null || value.length < 6) {
-                                  return 'La contraseña debe tener al menos 6 caracteres';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 30),
-                            Container(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    // Implementar lógica de registro
-                                    print('Nombre: ${_nameController.text}');
-                                    print(
-                                        'Fecha: ${_birthDateController.text}');
-                                    print('Edad: ${_ageController.text}');
-                                    print('Escuela: ${_schoolController.text}');
-                                    print('Email: ${_emailController.text}');
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Procesando registro...'),
-                                        backgroundColor: Color(0xFF7B1FA2),
-                                      ),
-                                    );
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF7B1FA2),
-                                  padding: EdgeInsets.symmetric(vertical: 15),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  elevation: 5,
-                                ),
-                                child: Text(
-                                  'Registrarse',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -690,7 +572,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   Widget _buildDatePickerField() {
     return _buildTextField(
       controller: _birthDateController,
-      icon: Icons.calendar_today_outlined,
+      icon: Icons.calendar_today,
       label: "Fecha de nacimiento",
       readOnly: true,
       onTap: () async {
@@ -719,28 +601,30 @@ class _RegistrationFormState extends State<RegistrationForm> {
     bool readOnly = false,
     Widget? suffixIcon,
     VoidCallback? onTap,
-    String? Function(String?)? validator,
   }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      readOnly: readOnly,
-      onTap: onTap,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: Colors.grey[600]),
-        prefixIcon: Icon(icon, color: Color(0xFF7B1FA2)),
-        suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        readOnly: readOnly,
+        onTap: onTap,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon),
+          suffixIcon: suffixIcon,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
-        filled: true,
-        fillColor: Colors.grey[200],
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor ingresa $label';
+          }
+          return null;
+        },
       ),
-      validator: validator,
     );
   }
 }
