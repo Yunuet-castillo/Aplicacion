@@ -3,8 +3,21 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'firebase_options.dart';
 
-void main() => runApp(MateManiaApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Inicializar Firebase con opciones específicas para cada plataforma
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+  runApp(MateManiaApp());
+}
 
 class MateManiaApp extends StatelessWidget {
   @override
