@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'firebase_options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  WidgetsFlutterBinding.ensureInitialized();
+  // Solo una vez
   if (kIsWeb) {
     // Configuración específica para Web
     await Firebase.initializeApp(
@@ -17,7 +18,7 @@ void main() async {
         apiKey: "AIzaSyCTAs6zOmZSd_3avM17x62qVU_Gat7dKso",
         authDomain: "aplicacion-8afa2.firebaseapp.com",
         projectId: "aplicacion-8afa2",
-        storageBucket: "aplicacion-8afa2.appspot.com", // Corregido
+        storageBucket: "aplicacion-8afa2.appspot.com",
         messagingSenderId: "1024396750145",
         appId: "1:1024396750145:web:50f7a262f32f5775fcc5c0",
       ),
@@ -27,6 +28,8 @@ void main() async {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
   }
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   runApp(MateManiaApp());
 }
 
@@ -35,6 +38,10 @@ class MateManiaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MateManía',
+      initialRoute: '/',
+      routes: {
+        '/home': (context) => MyHomePage(title: 'MateManiaApp'),
+      },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.purple,
@@ -221,7 +228,43 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  Future<void> iniciarSesion() async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, ingresa todos los campos')),
+      );
+      return;
+    }
+
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      if (userCredential.user != null) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.message}")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -316,15 +359,17 @@ class LoginScreen extends StatelessWidget {
                             Icons.person_outline,
                             "Usuario",
                             false,
+                            emailController,
                           ),
                           SizedBox(height: 20),
                           _buildTextField(
                             Icons.lock_outline,
                             "Contraseña",
                             true,
+                            passwordController,
                           ),
                           SizedBox(height: 30),
-                          _buildLoginButton(context),
+                          _buildLoginButton(),
                           SizedBox(height: 20),
                           _buildRegisterButton(context),
                         ],
@@ -355,7 +400,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(IconData icon, String hint, bool isPassword) {
+  Widget _buildTextField(IconData icon, String hint, bool isPassword,
+      TextEditingController controller) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[200],
@@ -369,6 +415,7 @@ class LoginScreen extends StatelessWidget {
         ],
       ),
       child: TextField(
+        controller: controller,
         obscureText: isPassword,
         style: TextStyle(fontSize: 18),
         decoration: InputDecoration(
@@ -386,17 +433,12 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLoginButton(BuildContext context) {
+  Widget _buildLoginButton() {
     return Container(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage(title: 'MateManía'),
-            ),
-          );
+          iniciarSesion(); // Llamar la función de iniciar sesión
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFF7B1FA2),
@@ -438,7 +480,7 @@ class LoginScreen extends StatelessWidget {
           elevation: 0,
         ),
         child: Text(
-          'Registrarse',
+          '¿No tienes cuenta? Regístrate',
           style: TextStyle(
             color: Color(0xFF7B1FA2),
             fontSize: 18,
@@ -487,22 +529,21 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  // Función para agregar usuario a Firebase
   void addUser() {
-    if (_formKey.currentState!.validate()) {
-      FirebaseFirestore.instance.collection('usuarios').add({
-        'nombre': _nameController.text,
-        'fecha_nacimiento': _birthDateController.text,
-        'edad': int.tryParse(_ageController.text) ?? 0,
-        'escuela': _schoolController.text,
-        'correo': _emailController.text,
-        'contraseña': _passwordController
-            .text, // ⚠️ Considera usar hashing en la contraseña
-      }).then((docRef) {
-        print("Usuario agregado con ID: ${docRef.id}");
-      }).catchError((error) {
-        print("Error al agregar usuario: $error");
-      });
-    }
+    FirebaseFirestore.instance.collection('usuarios').add({
+      'nombre': _nameController.text,
+      'fecha_nacimiento': _birthDateController.text,
+      'edad': int.tryParse(_ageController.text) ?? 0,
+      'escuela': _schoolController.text,
+      'correo': _emailController.text,
+      'contraseña': _passwordController
+          .text, // 🔴 Guardar contraseñas en texto plano no es seguro
+    }).then((docRef) {
+      print("Usuario agregado con ID: ${docRef.id}");
+    }).catchError((error) {
+      print("Error al agregar usuario: $error");
+    });
   }
 
   @override
@@ -520,51 +561,180 @@ class _RegistrationFormState extends State<RegistrationForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Registro de Usuario')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _buildTextField(
-                  controller: _nameController,
-                  icon: Icons.person,
-                  label: "Nombre"),
-              _buildDatePickerField(),
-              _buildTextField(
-                  controller: _ageController,
-                  icon: Icons.cake,
-                  label: "Edad",
-                  keyboardType: TextInputType.number),
-              _buildTextField(
-                  controller: _schoolController,
-                  icon: Icons.school,
-                  label: "Escuela"),
-              _buildTextField(
-                  controller: _emailController,
-                  icon: Icons.email,
-                  label: "Correo electrónico",
-                  keyboardType: TextInputType.emailAddress),
-              _buildTextField(
-                  controller: _passwordController,
-                  icon: Icons.lock,
-                  label: "Contraseña",
-                  obscureText: _obscurePassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  )),
-              SizedBox(height: 20),
-              ElevatedButton(onPressed: addUser, child: Text('Registrar')),
-            ],
+      body: Stack(
+        children: [
+          // Fondo atractivo con formas
+          Positioned.fill(
+            child: CustomPaint(
+              painter: BubblePainter(),
+            ),
           ),
-        ),
+          // Contenido principal
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    // Botón de regreso
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    // Título con estilo
+                    Text(
+                      'Crear Cuenta',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: 40),
+                    // Formulario dentro de un contenedor con fondo opaco
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            _buildTextField(
+                              controller: _nameController,
+                              icon: Icons.person_outline,
+                              label: "Nombre completo",
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu nombre';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            _buildDatePickerField(),
+                            SizedBox(height: 20),
+                            _buildTextField(
+                              controller: _ageController,
+                              icon: Icons.cake_outlined,
+                              label: "Edad",
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu edad';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            _buildTextField(
+                              controller: _schoolController,
+                              icon: Icons.school_outlined,
+                              label: "Escuela",
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu escuela';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            _buildTextField(
+                              controller: _emailController,
+                              icon: Icons.email_outlined,
+                              label: "Correo electrónico",
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || !value.contains('@')) {
+                                  return 'Ingresa un correo válido';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            _buildTextField(
+                              controller: _passwordController,
+                              icon: Icons.lock_outline,
+                              label: "Contraseña",
+                              obscureText: _obscurePassword,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Color(0xFF7B1FA2),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                              validator: (value) {
+                                if (value == null || value.length < 6) {
+                                  return 'La contraseña debe tener al menos 6 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            // Botón de registro con estilo atractivo
+                            Container(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    addUser();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Registro exitoso'),
+                                        backgroundColor: Color(0xFF7B1FA2),
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF7B1FA2),
+                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  elevation: 5,
+                                ),
+                                child: Text(
+                                  'Registrarse',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -572,7 +742,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   Widget _buildDatePickerField() {
     return _buildTextField(
       controller: _birthDateController,
-      icon: Icons.calendar_today,
+      icon: Icons.calendar_today_outlined,
       label: "Fecha de nacimiento",
       readOnly: true,
       onTap: () async {
@@ -601,30 +771,28 @@ class _RegistrationFormState extends State<RegistrationForm> {
     bool readOnly = false,
     Widget? suffixIcon,
     VoidCallback? onTap,
+    String? Function(String?)? validator,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        readOnly: readOnly,
-        onTap: onTap,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon),
-          suffixIcon: suffixIcon,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      readOnly: readOnly,
+      onTap: onTap,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.grey[600]),
+        prefixIcon: Icon(icon, color: Color(0xFF7B1FA2)),
+        suffixIcon: suffixIcon,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
         ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Por favor ingresa $label';
-          }
-          return null;
-        },
+        filled: true,
+        fillColor: Colors.grey[200],
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       ),
+      validator: validator,
     );
   }
 }
@@ -2098,27 +2266,452 @@ class _OperationPageState extends State<OperationPage>
   }
 }
 
-class HardLevelPage extends StatefulWidget {
-  @override
-  _HardLevelPageState createState() => _HardLevelPageState();
-}
-
-class _HardLevelPageState extends State<HardLevelPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(); // Placeholder return, actual implementation needed
-  }
-}
-
 class EasyLevelPage extends StatefulWidget {
   @override
   _EasyLevelPageState createState() => _EasyLevelPageState();
 }
 
-class _EasyLevelPageState extends State<EasyLevelPage> {
+class _EasyLevelPageState extends State<EasyLevelPage>
+    with SingleTickerProviderStateMixin {
+  int num1 = 0;
+  int num2 = 0;
+  int correctAnswer = 0;
+  String operation = "";
+  String userAnswer = "";
+  int questionsAsked = 0;
+  int totalQuestions = 0;
+  int correctCount = 0;
+  int incorrectCount = 0;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      askQuestionCount();
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void askQuestionCount() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          titlePadding: EdgeInsets.zero,
+          title: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Color(0xFF7B1FA2),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "¿Cuántas operaciones?",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.red.withOpacity(0.2),
+                    shape: CircleBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildOptionButton(
+                  5, "5 ejercicios", Icons.looks_one, Colors.green),
+              SizedBox(height: 10),
+              _buildOptionButton(
+                  10, "10 ejercicios", Icons.looks_two, Colors.orange),
+              SizedBox(height: 10),
+              _buildOptionButton(
+                  15, "15 ejercicios", Icons.looks_3, Colors.purple),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOptionButton(
+      int count, String text, IconData icon, Color color) {
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        onPressed: () => setQuestionCount(count),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 5,
+        ),
+      ),
+    );
+  }
+
+  void setQuestionCount(int count) {
+    setState(() {
+      totalQuestions = count;
+      correctCount = 0;
+      incorrectCount = 0;
+      questionsAsked = 0;
+      userAnswer = "";
+    });
+    Navigator.pop(context);
+    generateExercise();
+  }
+
+  void generateExercise() {
+    final random = Random();
+    setState(() {
+      num1 = random.nextInt(10) + 1;
+      num2 = random.nextInt(10) + 1;
+      final operations = ['+', '-', '*'];
+      operation = operations[random.nextInt(operations.length)];
+
+      switch (operation) {
+        case '+':
+          correctAnswer = num1 + num2;
+          break;
+        case '-':
+          correctAnswer = num1 - num2;
+          break;
+        case '*':
+          correctAnswer = num1 * num2;
+          break;
+      }
+    });
+  }
+
+  void checkAnswer() {
+    if (userAnswer.isEmpty) return;
+
+    _animationController.forward().then((_) {
+      _animationController.reverse();
+    });
+
+    setState(() {
+      if (int.tryParse(userAnswer) == correctAnswer) {
+        correctCount++;
+      } else {
+        incorrectCount++;
+      }
+      questionsAsked++;
+      userAnswer = "";
+    });
+
+    if (questionsAsked < totalQuestions) {
+      generateExercise();
+    } else {
+      showResults();
+    }
+  }
+
+  void showResults() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        double accuracy = (correctCount / totalQuestions) * 100;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            "¡Ejercicio Completado!",
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildResultItem(
+                "Respuestas Correctas",
+                correctCount,
+                Icons.check_circle,
+                Colors.green,
+              ),
+              SizedBox(height: 10),
+              _buildResultItem(
+                "Respuestas Incorrectas",
+                incorrectCount,
+                Icons.cancel,
+                Colors.red,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Volver a intentar",
+                style: TextStyle(
+                  color: Color(0xFF7B1FA2),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                askQuestionCount();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildResultItem(String label, int value, IconData icon, Color color,
+      {bool isPercentage = false}) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Spacer(),
+          Text(
+            isPercentage ? "$value%" : value.toString(),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(); // Placeholder return, actual implementation needed
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Nivel Fácil"),
+        backgroundColor: Color(0xFF7B1FA2),
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Indicador de progreso
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Progreso",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "$questionsAsked/$totalQuestions",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    LinearProgressIndicator(
+                      value: totalQuestions > 0
+                          ? questionsAsked / totalQuestions
+                          : 0,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      minHeight: 10,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: AnimatedBuilder(
+                      animation: _scaleAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: child,
+                        );
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(30),
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "$num1 $operation $num2 = ?",
+                                  style: TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF7B1FA2),
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                                Container(
+                                  width: 150,
+                                  child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF7B1FA2),
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: "?",
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 30,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[100],
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        userAnswer = value;
+                                      });
+                                    },
+                                    onSubmitted: (value) {
+                                      if (value.isNotEmpty) {
+                                        checkAnswer();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: ElevatedButton(
+                              onPressed:
+                                  userAnswer.isNotEmpty ? checkAnswer : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF7B1FA2),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 50,
+                                  vertical: 15,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 5,
+                              ),
+                              child: Text(
+                                "Comprobar",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -2127,10 +2720,880 @@ class IntermediateLevelPage extends StatefulWidget {
   _IntermediateLevelPageState createState() => _IntermediateLevelPageState();
 }
 
-class _IntermediateLevelPageState extends State<IntermediateLevelPage> {
+class _IntermediateLevelPageState extends State<IntermediateLevelPage>
+    with SingleTickerProviderStateMixin {
+  int num1 = 0;
+  int num2 = 0;
+  int correctAnswer = 0;
+  String operation = "";
+  String userAnswer = "";
+  int questionsAsked = 0;
+  int totalQuestions = 0;
+  int correctCount = 0;
+  int incorrectCount = 0;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      askQuestionCount();
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void askQuestionCount() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          titlePadding: EdgeInsets.zero,
+          title: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Color(0xFF7B1FA2),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "¿Cuántas operaciones?",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.red.withOpacity(0.2),
+                    shape: CircleBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildOptionButton(
+                  5, "5 ejercicios", Icons.looks_one, Colors.green),
+              SizedBox(height: 10),
+              _buildOptionButton(
+                  10, "10 ejercicios", Icons.looks_two, Colors.orange),
+              SizedBox(height: 10),
+              _buildOptionButton(
+                  15, "15 ejercicios", Icons.looks_3, Colors.purple),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOptionButton(
+      int count, String text, IconData icon, Color color) {
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        onPressed: () => setQuestionCount(count),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 5,
+        ),
+      ),
+    );
+  }
+
+  void setQuestionCount(int count) {
+    setState(() {
+      totalQuestions = count;
+      correctCount = 0;
+      incorrectCount = 0;
+      questionsAsked = 0;
+      userAnswer = "";
+    });
+    Navigator.pop(context);
+    generateExercise();
+  }
+
+  void generateExercise() {
+    final random = Random();
+    setState(() {
+      num1 = random.nextInt(50) + 50; // Números entre 50 y 99
+      num2 = random.nextInt(50) + 50;
+      final operations = ['+', '-', '*', '/'];
+      operation = operations[random.nextInt(operations.length)];
+
+      switch (operation) {
+        case '+':
+          correctAnswer = num1 + num2;
+          break;
+        case '-':
+          correctAnswer = num1 - num2;
+          break;
+        case '*':
+          correctAnswer = num1 * num2;
+          break;
+        case '/':
+          // Asegurar división exacta
+          num1 = num1 * num2;
+          correctAnswer = num1 ~/ num2;
+          break;
+      }
+    });
+  }
+
+  void checkAnswer() {
+    if (userAnswer.isEmpty) return;
+
+    _animationController.forward().then((_) {
+      _animationController.reverse();
+    });
+
+    setState(() {
+      if (int.tryParse(userAnswer) == correctAnswer) {
+        correctCount++;
+      } else {
+        incorrectCount++;
+      }
+      questionsAsked++;
+      userAnswer = "";
+    });
+
+    if (questionsAsked < totalQuestions) {
+      generateExercise();
+    } else {
+      showResults();
+    }
+  }
+
+  void showResults() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        double accuracy = (correctCount / totalQuestions) * 100;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            "¡Ejercicio Completado!",
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildResultItem(
+                "Respuestas Correctas",
+                correctCount,
+                Icons.check_circle,
+                Colors.green,
+              ),
+              SizedBox(height: 10),
+              _buildResultItem(
+                "Respuestas Incorrectas",
+                incorrectCount,
+                Icons.cancel,
+                Colors.red,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Volver a intentar",
+                style: TextStyle(
+                  color: Color(0xFF7B1FA2),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                askQuestionCount();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildResultItem(String label, int value, IconData icon, Color color,
+      {bool isPercentage = false}) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Spacer(),
+          Text(
+            isPercentage ? "$value%" : value.toString(),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(); // Placeholder return, actual implementation needed
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Nivel Intermedio"),
+        backgroundColor: Color(0xFF7B1FA2),
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Indicador de progreso
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Progreso",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "$questionsAsked/$totalQuestions",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    LinearProgressIndicator(
+                      value: totalQuestions > 0
+                          ? questionsAsked / totalQuestions
+                          : 0,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      minHeight: 10,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: AnimatedBuilder(
+                      animation: _scaleAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: child,
+                        );
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(30),
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "$num1 $operation $num2 = ?",
+                                  style: TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF7B1FA2),
+                                  ),
+                                ),
+                                SizedBox(height: 30),
+                                Container(
+                                  width: 150,
+                                  child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF7B1FA2),
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: "?",
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 30,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[100],
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        userAnswer = value;
+                                      });
+                                    },
+                                    onSubmitted: (value) {
+                                      if (value.isNotEmpty) {
+                                        checkAnswer();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: ElevatedButton(
+                              onPressed:
+                                  userAnswer.isNotEmpty ? checkAnswer : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF7B1FA2),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 50,
+                                  vertical: 15,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 5,
+                              ),
+                              child: Text(
+                                "Comprobar",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HardLevelPage extends StatefulWidget {
+  @override
+  _HardLevelPageState createState() => _HardLevelPageState();
+}
+
+class _HardLevelPageState extends State<HardLevelPage> {
+  int num1 = 0;
+  int num2 = 0;
+  double correctAnswer = 0.0;
+  String operation = "";
+  String userAnswer = "";
+  int questionsAsked = 0;
+  int totalQuestions = 0;
+  int correctCount = 0;
+  int incorrectCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      askQuestionCount();
+    });
+  }
+
+  void setQuestionCount(int count) {
+    setState(() {
+      totalQuestions = count;
+      correctCount = 0;
+      incorrectCount = 0;
+      questionsAsked = 0;
+      userAnswer = "";
+    });
+    Navigator.pop(context);
+    generateExercise();
+  }
+
+  void generateExercise() {
+    final random = Random();
+    setState(() {
+      num1 = random.nextInt(90) + 10; // Números entre 10 y 99
+      num2 = random.nextInt(90) + 10;
+
+      List<String> operations = ['+', '-', '*', '/'];
+      operation = operations[random.nextInt(operations.length)];
+
+      switch (operation) {
+        case '+':
+          correctAnswer = (num1 + num2).toDouble();
+          break;
+        case '-':
+          correctAnswer = (num1 - num2).toDouble();
+          break;
+        case '*':
+          correctAnswer = (num1 * num2).toDouble();
+          break;
+        case '/':
+          // Asegurar división exacta
+          num1 = (num1 * num2);
+          correctAnswer = num1 / num2;
+          break;
+      }
+    });
+  }
+
+  void checkAnswer() {
+    if (userAnswer.isEmpty) return;
+
+    double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
+    if (parsedAnswer == correctAnswer) {
+      correctCount++;
+    } else {
+      incorrectCount++;
+    }
+
+    setState(() {
+      questionsAsked++;
+      userAnswer = "";
+    });
+
+    if (questionsAsked >= totalQuestions) {
+      showResults();
+    } else {
+      generateExercise();
+    }
+  }
+
+  void showResults() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        double accuracy = (correctCount / totalQuestions) * 100;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            "¡Ejercicio Completado!",
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildResultItem(
+                "Respuestas Correctas",
+                correctCount,
+                Icons.check_circle,
+                Colors.green,
+              ),
+              SizedBox(height: 10),
+              _buildResultItem(
+                "Respuestas Incorrectas",
+                incorrectCount,
+                Icons.cancel,
+                Colors.red,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Volver a intentar",
+                style: TextStyle(
+                  color: Color(0xFF7B1FA2),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                askQuestionCount();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildResultItem(String label, int value, IconData icon, Color color,
+      {bool isPercentage = false}) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Spacer(),
+          Text(
+            isPercentage ? "$value%" : value.toString(),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Nivel Difícil"),
+        backgroundColor: Color(0xFF7B1FA2),
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Indicador de progreso
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Progreso",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "$questionsAsked/$totalQuestions",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    LinearProgressIndicator(
+                      value: totalQuestions > 0
+                          ? questionsAsked / totalQuestions
+                          : 0,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      minHeight: 10,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(30),
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "$num1 $operation $num2 = ?",
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF7B1FA2),
+                                ),
+                              ),
+                              SizedBox(height: 30),
+                              Container(
+                                width: 150,
+                                child: TextField(
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF7B1FA2),
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: "?",
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 30,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[100],
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      userAnswer = value;
+                                    });
+                                  },
+                                  onSubmitted: (value) {
+                                    if (value.isNotEmpty) {
+                                      checkAnswer();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: ElevatedButton(
+                            onPressed:
+                                userAnswer.isNotEmpty ? checkAnswer : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF7B1FA2),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 15,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              elevation: 5,
+                            ),
+                            child: Text(
+                              "Comprobar",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void askQuestionCount() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          titlePadding: EdgeInsets.zero,
+          title: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Color(0xFF7B1FA2),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "¿Cuántas operaciones quieres hacer?",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.red.withOpacity(0.2),
+                    shape: CircleBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildOptionButton(
+                  5, "5 ejercicios", Icons.looks_one, Colors.green),
+              SizedBox(height: 10),
+              _buildOptionButton(
+                  10, "10 ejercicios", Icons.looks_two, Colors.orange),
+              SizedBox(height: 10),
+              _buildOptionButton(
+                  15, "15 ejercicios", Icons.looks_3, Colors.purple),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOptionButton(
+      int count, String text, IconData icon, Color color) {
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        onPressed: () => setQuestionCount(count),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 5,
+        ),
+      ),
+    );
   }
 }
 
@@ -2140,11 +3603,495 @@ class TimedLevelPage extends StatefulWidget {
 }
 
 class _TimedLevelPageState extends State<TimedLevelPage> {
-  // Implementation of the TimedLevelPage state
+  late int num1;
+  late int num2;
+  late double correctAnswer;
+  String operation = "";
+  String userAnswer = "";
+  int questionsAsked = 0;
+  final int totalQuestions = 20; // Fijo en 20 operaciones
+  int correctCount = 0;
+  int incorrectCount = 0;
+  int timeLeft = 30; // 30 segundos
+  late Timer timer;
+  bool isTimerRunning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    num1 = 0;
+    num2 = 0;
+    correctAnswer = 0.0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showStartDialog();
+    });
+  }
+
+  @override
+  void dispose() {
+    if (isTimerRunning) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
+
+  void showStartDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "¡Modo Contra Reloj!",
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.timer,
+                size: 60,
+                color: Color(0xFF7B1FA2),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Tienes 30 segundos para resolver\n20 operaciones matemáticas",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "¿Estás listo?",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF7B1FA2),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.grey),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              child: Text("¡Comenzar!"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF7B1FA2),
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                startGame();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void startGame() {
+    setState(() {
+      timeLeft = 30;
+      questionsAsked = 0;
+      correctCount = 0;
+      incorrectCount = 0;
+      isTimerRunning = true;
+    });
+    generateExercise();
+    startTimer();
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (timeLeft > 0) {
+          timeLeft--;
+        } else {
+          timer.cancel();
+          showResults();
+        }
+      });
+    });
+  }
+
+  void generateExercise() {
+    final random = Random();
+    setState(() {
+      num1 = random.nextInt(90) + 10; // Números entre 10 y 99
+      num2 = random.nextInt(90) + 10;
+
+      List<String> operations = ['+', '-', '*', '/'];
+      operation = operations[random.nextInt(operations.length)];
+
+      switch (operation) {
+        case '+':
+          correctAnswer = (num1 + num2).toDouble();
+          break;
+        case '-':
+          correctAnswer = (num1 - num2).toDouble();
+          break;
+        case '*':
+          correctAnswer = (num1 * num2).toDouble();
+          break;
+        case '/':
+          // Asegurar división exacta
+          num1 = (num1 * num2);
+          correctAnswer = num1 / num2;
+          break;
+      }
+    });
+  }
+
+  void checkAnswer() {
+    if (userAnswer.isEmpty) return;
+
+    double parsedAnswer = double.tryParse(userAnswer) ?? 0.0;
+    if (parsedAnswer == correctAnswer) {
+      correctCount++;
+    } else {
+      incorrectCount++;
+    }
+
+    setState(() {
+      questionsAsked++;
+      userAnswer = "";
+    });
+
+    if (questionsAsked >= totalQuestions) {
+      showResults();
+    } else {
+      generateExercise();
+    }
+  }
+
+  void showResults() {
+    if (isTimerRunning) {
+      timer.cancel();
+      isTimerRunning = false;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        double accuracy =
+            questionsAsked > 0 ? (correctCount / questionsAsked * 100) : 0;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            "¡Tiempo Terminado!",
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildResultItem(
+                "Operaciones Realizadas",
+                questionsAsked,
+                Icons.calculate,
+                Colors.purple,
+              ),
+              SizedBox(height: 10),
+              _buildResultItem(
+                "Respuestas Correctas",
+                correctCount,
+                Icons.check_circle,
+                Colors.green,
+              ),
+              SizedBox(height: 10),
+              _buildResultItem(
+                "Respuestas Incorrectas",
+                incorrectCount,
+                Icons.cancel,
+                Colors.red,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Volver a intentar",
+                style: TextStyle(
+                  color: Color(0xFF7B1FA2),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                showStartDialog();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Implementation of the build method
-    return Container(); // Placeholder return, actual implementation needed
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Contra Reloj"),
+        backgroundColor: Color(0xFF7B1FA2),
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Timer display mejorado
+              Container(
+                margin: EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.timer,
+                      color: timeLeft <= 5 ? Colors.red : Color(0xFF7B1FA2),
+                      size: 30,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      timeLeft.toString(),
+                      style: TextStyle(
+                        color: timeLeft <= 5 ? Colors.red : Color(0xFF7B1FA2),
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "segundos",
+                      style: TextStyle(
+                        color: Color(0xFF7B1FA2),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Progreso
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Progreso",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "$questionsAsked/$totalQuestions",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    LinearProgressIndicator(
+                      value: totalQuestions > 0
+                          ? questionsAsked / totalQuestions
+                          : 0,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      minHeight: 10,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ],
+                ),
+              ),
+              // Operación matemática
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(30),
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "$num1 $operation $num2 = ?",
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF7B1FA2),
+                                ),
+                              ),
+                              SizedBox(height: 30),
+                              Container(
+                                width: 150,
+                                child: TextField(
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF7B1FA2),
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: "?",
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 30,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[100],
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      userAnswer = value;
+                                    });
+                                  },
+                                  onSubmitted: (value) {
+                                    if (value.isNotEmpty) {
+                                      checkAnswer();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        // Botón de verificar
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: ElevatedButton(
+                            onPressed:
+                                userAnswer.isNotEmpty ? checkAnswer : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF7B1FA2),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 15,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              elevation: 5,
+                            ),
+                            child: Text(
+                              "Comprobar",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultItem(String label, int value, IconData icon, Color color,
+      {bool isPercentage = false}) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Spacer(),
+          Text(
+            isPercentage ? "$value%" : value.toString(),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -2213,7 +4160,8 @@ class MateManiaDrawer extends StatelessWidget {
               context,
               icon: Icons.exit_to_app,
               title: 'Cerrar Sesión',
-              onTap: () {
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),

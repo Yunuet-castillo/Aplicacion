@@ -1,3 +1,4 @@
+
 name: aplicacion
 description: "A new Flutter project."
 publish_to: 'none'
@@ -12,8 +13,6 @@ dependencies:
     sdk: flutter
   firebase_core: ^3.12.1
   firebase_auth: ^5.5.1
-
-
   path_provider: ^2.1.2
   cupertino_icons: ^1.0.8
   cloud_firestore: ^5.6.5
@@ -30,7 +29,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assest/Designer.png"
+  image_path: "assest/logo_aplicacion.png"
 
 flutter:
   uses-material-design: true
@@ -39,5 +38,6 @@ fonts:
   - family: ComicSans
     fonts:
       - asset: fonts/ComicSans.ttf
+        
 
       
