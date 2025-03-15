@@ -357,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           _buildTextField(
                             Icons.person_outline,
-                            "Usuario",
+                            "Correo Electrónico",
                             false,
                             emailController,
                           ),
@@ -522,6 +522,8 @@ class RegistrationForm extends StatefulWidget {
 class _RegistrationFormState extends State<RegistrationForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _apepatController = TextEditingController();
+  final TextEditingController _apematController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _schoolController = TextEditingController();
@@ -529,26 +531,57 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  // Función para agregar usuario a Firebase
-  void addUser() {
-    FirebaseFirestore.instance.collection('usuarios').add({
-      'nombre': _nameController.text,
-      'fecha_nacimiento': _birthDateController.text,
-      'edad': int.tryParse(_ageController.text) ?? 0,
-      'escuela': _schoolController.text,
-      'correo': _emailController.text,
-      'contraseña': _passwordController
-          .text, // 🔴 Guardar contraseñas en texto plano no es seguro
-    }).then((docRef) {
-      print("Usuario agregado con ID: ${docRef.id}");
-    }).catchError((error) {
-      print("Error al agregar usuario: $error");
-    });
+  // Función para registrar usuario en Firebase Auth y guardar en Firestore
+  Future<void> addUser() async {
+    try {
+      // Registro en Firebase Authentication
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      User? user = userCredential.user;
+      if (user != null) {
+        // Guardar datos en Firestore
+        await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(user.uid)
+            .set({
+          'name': _nameController.text.trim(),
+          'apepat': _apepatController.text.trim(),
+          'apemat': _apematController.text.trim(),
+          'birthDate': _birthDateController.text.trim(),
+          'age': int.tryParse(_ageController.text.trim()) ?? 0,
+          'school': _schoolController.text.trim(),
+          'email': user.email,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registro exitoso'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Redirigir al usuario a otra pantalla (Opcional)
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _apepatController.dispose();
+    _apematController.dispose();
     _birthDateController.dispose();
     _ageController.dispose();
     _schoolController.dispose();
@@ -563,13 +596,12 @@ class _RegistrationFormState extends State<RegistrationForm> {
       appBar: AppBar(title: Text('Registro de Usuario')),
       body: Stack(
         children: [
-          // Fondo atractivo con formas
+          // Fondo atractivo
           Positioned.fill(
             child: CustomPaint(
               painter: BubblePainter(),
             ),
           ),
-          // Contenido principal
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
@@ -585,7 +617,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    // Título con estilo
+                    // Título
                     Text(
                       'Crear Cuenta',
                       style: TextStyle(
@@ -596,7 +628,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                       ),
                     ),
                     SizedBox(height: 40),
-                    // Formulario dentro de un contenedor con fondo opaco
+                    // Formulario
                     Container(
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -615,114 +647,61 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         child: Column(
                           children: [
                             _buildTextField(
-                              controller: _nameController,
-                              icon: Icons.person_outline,
-                              label: "Nombre completo",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu nombre';
-                                }
-                                return null;
-                              },
-                            ),
+                                _nameController, Icons.person, "Nombre"),
+                            SizedBox(height: 20),
+                            _buildTextField(_apepatController, Icons.person,
+                                "Apellido paterno"),
+                            SizedBox(height: 20),
+                            _buildTextField(_apematController, Icons.person,
+                                "Apellido materno"),
                             SizedBox(height: 20),
                             _buildDatePickerField(),
                             SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _ageController,
-                              icon: Icons.cake_outlined,
-                              label: "Edad",
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu edad';
-                                }
-                                return null;
-                              },
-                            ),
+                            _buildTextField(_ageController, Icons.cake, "Edad",
+                                keyboardType: TextInputType.number),
                             SizedBox(height: 20),
                             _buildTextField(
-                              controller: _schoolController,
-                              icon: Icons.school_outlined,
-                              label: "Escuela",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu escuela';
-                                }
-                                return null;
-                              },
-                            ),
+                                _schoolController, Icons.school, "Escuela"),
+                            SizedBox(height: 20),
+                            _buildTextField(_emailController, Icons.email,
+                                "Correo electrónico",
+                                keyboardType: TextInputType.emailAddress),
                             SizedBox(height: 20),
                             _buildTextField(
-                              controller: _emailController,
-                              icon: Icons.email_outlined,
-                              label: "Correo electrónico",
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || !value.contains('@')) {
-                                  return 'Ingresa un correo válido';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _passwordController,
-                              icon: Icons.lock_outline,
-                              label: "Contraseña",
-                              obscureText: _obscurePassword,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Color(0xFF7B1FA2),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                              validator: (value) {
-                                if (value == null || value.length < 6) {
-                                  return 'La contraseña debe tener al menos 6 caracteres';
-                                }
-                                return null;
-                              },
-                            ),
+                                _passwordController, Icons.lock, "Contraseña",
+                                obscureText: _obscurePassword,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Color(0xFF7B1FA2),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                )),
                             SizedBox(height: 30),
-                            // Botón de registro con estilo atractivo
-                            Container(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    addUser();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Registro exitoso'),
-                                        backgroundColor: Color(0xFF7B1FA2),
-                                      ),
-                                    );
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF7B1FA2),
-                                  padding: EdgeInsets.symmetric(vertical: 15),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  elevation: 5,
+                            // Botón de registro
+                            ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  addUser();
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF7B1FA2),
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
-                                child: Text(
-                                  'Registrarse',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
+                              ),
+                              child: Text(
+                                'Registrarse',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ],
@@ -741,38 +720,30 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
   Widget _buildDatePickerField() {
     return _buildTextField(
-      controller: _birthDateController,
-      icon: Icons.calendar_today_outlined,
-      label: "Fecha de nacimiento",
-      readOnly: true,
-      onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
-        );
-        if (pickedDate != null) {
-          setState(() {
-            _birthDateController.text =
-                "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-          });
-        }
-      },
-    );
+        _birthDateController, Icons.calendar_today, "Fecha de nacimiento",
+        readOnly: true, onTap: () async {
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime.now(),
+      );
+      if (pickedDate != null) {
+        setState(() {
+          _birthDateController.text =
+              "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+        });
+      }
+    });
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required IconData icon,
-    required String label,
-    TextInputType? keyboardType,
-    bool obscureText = false,
-    bool readOnly = false,
-    Widget? suffixIcon,
-    VoidCallback? onTap,
-    String? Function(String?)? validator,
-  }) {
+  Widget _buildTextField(
+      TextEditingController controller, IconData icon, String label,
+      {TextInputType keyboardType = TextInputType.text,
+      bool obscureText = false,
+      bool readOnly = false,
+      Widget? suffixIcon,
+      VoidCallback? onTap}) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
@@ -781,18 +752,12 @@ class _RegistrationFormState extends State<RegistrationForm> {
       onTap: onTap,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.grey[600]),
         prefixIcon: Icon(icon, color: Color(0xFF7B1FA2)),
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
-        ),
         filled: true,
         fillColor: Colors.grey[200],
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
       ),
-      validator: validator,
     );
   }
 }
@@ -1276,105 +1241,128 @@ class _AchievementsPage extends StatelessWidget {
   }
 }
 
-class _ProfilePage extends StatelessWidget {
+class _ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<_ProfilePage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _apepatController = TextEditingController();
+  final TextEditingController _apematController = TextEditingController();
+  final TextEditingController _birthDateController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _schoolController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      debugPrint("Usuario autenticado: ${user.uid}");
+      try {
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(user.uid)
+            .get();
+
+        if (userData.exists) {
+          debugPrint("Datos obtenidos: ${userData.data()}");
+
+          if (mounted) {
+            setState(() {
+              _nameController.text = userData.get('name') ?? 'Sin nombre';
+              _apepatController.text = userData.get('apepat') ?? 'Sin apellido';
+              _apematController.text = userData.get('apemat') ?? 'Sin apellido';
+              _birthDateController.text =
+                  userData.get('birthDate') ?? 'Desconocida';
+              _ageController.text = userData.get('age')?.toString() ?? 'N/A';
+              _schoolController.text =
+                  userData.get('school') ?? 'No especificada';
+              _emailController.text = userData.get('email') ?? 'No disponible';
+              _isLoading = false;
+            });
+          }
+        } else {
+          debugPrint("No se encontró el documento del usuario.");
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        debugPrint("Error obteniendo los datos del usuario: $e");
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      debugPrint("Usuario no autenticado.");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 30),
-            // Sección de foto de perfil
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 15,
-                        offset: Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: Image.network(
-                      'https://via.placeholder.com/150',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.person,
-                          size: 80,
-                          color: Colors.purple[300],
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.purple[800],
-                    radius: 20,
-                    child: IconButton(
-                      icon:
-                          Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                      onPressed: () {
-                        // Lógica para cambiar la foto
-                      },
-                    ),
-                  ),
-                ),
-              ],
+    return _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
-            SizedBox(height: 20),
-            // Información del usuario
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildInfoCard(
-                    title: "Información Personal",
-                    children: [
-                      _buildInfoRow(Icons.person, "Nombre", "Yunuet Castillo"),
-                      _buildInfoRow(Icons.cake, "Edad", "12 años"),
-                      _buildInfoRow(
-                          Icons.school, "Escuela", "Primaria Emiliano Zapata"),
-                      _buildInfoRow(Icons.email, "Email", "yunuet@gmail.com"),
-                    ],
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        _buildInfoCard(
+                          title: "Información Personal",
+                          children: [
+                            _buildInfoRow(
+                                Icons.person, "Nombre", _nameController.text),
+                            _buildInfoRow(Icons.cake, "Edad",
+                                "${_ageController.text} años"),
+                            _buildInfoRow(Icons.school, "Escuela",
+                                _schoolController.text),
+                            _buildInfoRow(
+                                Icons.email, "Email", _emailController.text),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        _buildInfoCard(
+                          title: "Estadísticas",
+                          children: [
+                            _buildProgressBar("Nivel", 0.7, "Avanzado"),
+                            SizedBox(height: 15),
+                            _buildProgressBar(
+                                "Ejercicios Completados", 0.85, "85%"),
+                            SizedBox(height: 15),
+                            _buildProgressBar(
+                                "Ejercicios Incorrectos", 0.92, "92%"),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 20),
-                  _buildInfoCard(
-                    title: "Estadísticas",
-                    children: [
-                      _buildProgressBar("Nivel", 0.7, "Avanzado"),
-                      SizedBox(height: 15),
-                      _buildProgressBar("Ejercicios Completados", 0.85, "85%"),
-                      SizedBox(height: 15),
-                      _buildProgressBar("Ejercicios Incorrectos", 0.92, "92%"),
-                    ],
-                  ),
+                  SizedBox(height: 30),
                 ],
               ),
             ),
-            SizedBox(height: 30),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget _buildInfoCard(
@@ -1465,15 +1453,17 @@ class _ProfilePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            FractionallySizedBox(
-              widthFactor: value,
-              child: Container(
-                height: 20,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.purple[300]!, Colors.purple[800]!],
+            Positioned.fill(
+              child: FractionallySizedBox(
+                widthFactor: value,
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.purple[300]!, Colors.purple[800]!],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
@@ -3612,7 +3602,7 @@ class _TimedLevelPageState extends State<TimedLevelPage> {
   final int totalQuestions = 20; // Fijo en 20 operaciones
   int correctCount = 0;
   int incorrectCount = 0;
-  int timeLeft = 30; // 30 segundos
+  int timeLeft = 50; // 30 segundos
   late Timer timer;
   bool isTimerRunning = false;
 
@@ -4104,70 +4094,106 @@ class MateManiaDrawer extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+            colors: [
+              Color(0xFF7B1FA2),
+              Color(0xFFE1BEE7),
+            ],
           ),
         ),
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            DrawerHeader(
+            Container(
+              padding: EdgeInsets.only(top: 50, bottom: 20),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.1),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 15,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
                     child: Icon(
                       Icons.person,
-                      size: 40,
+                      size: 60,
                       color: Color(0xFF7B1FA2),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 15),
                   Text(
-                    'MateManía',
+                    'Configuración',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ],
               ),
             ),
-            _buildDrawerItem(
-              context,
-              icon: Icons.settings,
-              title: 'Configuración',
-              onTap: () {
-                // Implementar navegación a configuración
-                Navigator.pop(context);
-              },
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                children: [
+                  _createDrawerItem(
+                    icon: Icons.edit,
+                    text: 'Cambiar nombre',
+                    description: 'Actualiza tu nombre de usuario',
+                    color: Colors.green,
+                    onTap: () => _showEditDialog(context, 'nombre'),
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.vpn_key,
+                    text: 'Contraseña',
+                    description: 'Modifica tu contraseña',
+                    color: Colors.orange,
+                    onTap: () => _showPasswordDialog(context),
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.comment,
+                    text: 'Comentarios',
+                    description: 'Deja tus sugerencias',
+                    color: Colors.blue,
+                    onTap: () => _showEditDialog(context, 'comentario'),
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.history,
+                    text: 'Progreso e Historial',
+                    description: 'Revisa tu avance',
+                    color: Colors.purple,
+                    onTap: () =>
+                        _showEditDialog(context, 'Progreso e Historial'),
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.exit_to_app,
+                    text: 'Salir',
+                    description: 'Cerrar la aplicación',
+                    color: Colors.redAccent,
+                    onTap: () => _showExitWarning(context),
+                  ),
+                ],
+              ),
             ),
-            _buildDrawerItem(
-              context,
-              icon: Icons.help_outline,
-              title: 'Ayuda',
-              onTap: () {
-                // Implementar navegación a ayuda
-                Navigator.pop(context);
-              },
-            ),
-            _buildDrawerItem(
-              context,
-              icon: Icons.exit_to_app,
-              title: 'Cerrar Sesión',
-              onTap: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                  (route) => false,
-                );
-              },
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'MateManía v1.0',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                ),
+              ),
             ),
           ],
         ),
@@ -4175,23 +4201,228 @@ class MateManiaDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildDrawerItem(
-    BuildContext context, {
+  Widget _createDrawerItem({
     required IconData icon,
-    required String title,
-    required VoidCallback onTap,
+    required String text,
+    required String description,
+    required Color color,
+    required GestureTapCallback onTap,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-        ),
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
       ),
-      onTap: onTap,
-      hoverColor: Colors.white.withOpacity(0.1),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.2),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 26,
+          ),
+        ),
+        title: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          description,
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 12,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.white54,
+          size: 16,
+        ),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, String title) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            'Cambiar $title',
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: TextField(
+            decoration: InputDecoration(
+              hintText: "Ingrese nuevo $title",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              filled: true,
+              fillColor: Colors.grey[100],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.grey),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              child: Text("Guardar"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF7B1FA2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () {
+                // Implementar lógica para guardar cambios
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPasswordDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            'Cambiar contraseña',
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Nueva contraseña",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Confirmar contraseña",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.grey),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              child: Text("Guardar"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF7B1FA2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () {
+                // Implementar lógica para cambiar contraseña
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showExitWarning(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "¿Estás seguro?",
+            style: TextStyle(
+              color: Color(0xFF7B1FA2),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            "¿Realmente deseas salir de MateManía?",
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.grey),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                // Lógica para cerrar sesión
+                await FirebaseAuth.instance.signOut();
+                Navigator.pop(
+                    context); // Cerrar el diálogo después de cerrar sesión
+              },
+              child: Text("Salir"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
