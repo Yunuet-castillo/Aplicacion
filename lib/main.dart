@@ -534,39 +534,39 @@ class _RegistrationFormState extends State<RegistrationForm> {
   // Función para registrar usuario en Firebase Auth y guardar en Firestore
   Future<void> addUser() async {
     try {
-      // Registro en Firebase Authentication
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      User? user = userCredential.user;
-      if (user != null) {
-        // Guardar datos en Firestore
-        await FirebaseFirestore.instance
-            .collection('usuarios')
-            .doc(user.uid)
-            .set({
-          'name': _nameController.text.trim(),
-          'apepat': _apepatController.text.trim(),
-          'apemat': _apematController.text.trim(),
-          'birthDate': _birthDateController.text.trim(),
-          'age': int.tryParse(_ageController.text.trim()) ?? 0,
-          'school': _schoolController.text.trim(),
-          'email': user.email,
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Registro exitoso'),
-            backgroundColor: Colors.green,
-          ),
+      // Aseguramos que la operación se realice en el hilo principal
+      await Future.delayed(Duration.zero, () async {
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
         );
 
-        // Redirigir al usuario a otra pantalla (Opcional)
-        Navigator.pop(context);
-      }
+        User? user = userCredential.user;
+        if (user != null) {
+          // Guardar datos en Firestore
+          await FirebaseFirestore.instance
+              .collection('usuarios')
+              .doc(user.uid)
+              .set({
+            'name': _nameController.text.trim(),
+            'apepat': _apepatController.text.trim(),
+            'apemat': _apematController.text.trim(),
+            'birthDate': _birthDateController.text.trim(),
+            'age': int.tryParse(_ageController.text.trim()) ?? 0,
+            'school': _schoolController.text.trim(),
+            'email': user.email,
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registro exitoso'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pop(context);
+        }
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1263,17 +1263,22 @@ class _ProfilePageState extends State<_ProfilePage> {
   }
 
   Future<void> _fetchUserData() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      debugPrint("Usuario autenticado: ${user.uid}");
-      try {
+    try {
+      // Forzar Firestore a reconectarse si estaba offline
+      await FirebaseFirestore.instance.disableNetwork();
+      await FirebaseFirestore.instance.enableNetwork();
+
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        debugPrint("✅ Usuario autenticado: ${user.uid}");
+
         DocumentSnapshot userData = await FirebaseFirestore.instance
             .collection('usuarios')
             .doc(user.uid)
             .get();
 
         if (userData.exists) {
-          debugPrint("Datos obtenidos: ${userData.data()}");
+          debugPrint("✅ Datos obtenidos: ${userData.data()}");
 
           if (mounted) {
             setState(() {
@@ -1286,26 +1291,22 @@ class _ProfilePageState extends State<_ProfilePage> {
               _schoolController.text =
                   userData.get('school') ?? 'No especificada';
               _emailController.text = userData.get('email') ?? 'No disponible';
-              _isLoading = false;
             });
           }
         } else {
-          debugPrint("No se encontró el documento del usuario.");
-          setState(() {
-            _isLoading = false;
-          });
+          debugPrint("❌ No se encontró el documento del usuario.");
         }
-      } catch (e) {
-        debugPrint("Error obteniendo los datos del usuario: $e");
+      } else {
+        debugPrint("❌ Usuario no autenticado.");
+      }
+    } catch (e) {
+      debugPrint("⚠️ Error obteniendo los datos del usuario: $e");
+    } finally {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
-    } else {
-      debugPrint("Usuario no autenticado.");
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -1334,6 +1335,12 @@ class _ProfilePageState extends State<_ProfilePage> {
                           children: [
                             _buildInfoRow(
                                 Icons.person, "Nombre", _nameController.text),
+                            _buildInfoRow(Icons.person, "Apellido Paterno",
+                                _apepatController.text),
+                            _buildInfoRow(Icons.person, "Apellido Materno",
+                                _apematController.text),
+                            _buildInfoRow(Icons.cake, "Fecha de  Nacimiento",
+                                _birthDateController.text),
                             _buildInfoRow(Icons.cake, "Edad",
                                 "${_ageController.text} años"),
                             _buildInfoRow(Icons.school, "Escuela",
