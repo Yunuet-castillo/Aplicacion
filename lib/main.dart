@@ -7,6 +7,8 @@ import 'firebase_options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -1255,6 +1257,7 @@ class _ProfilePageState extends State<_ProfilePage> {
   final TextEditingController _schoolController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = true;
+  String? _profileImageUrl;
 
   @override
   void initState() {
@@ -2854,25 +2857,37 @@ class _IntermediateLevelPageState extends State<IntermediateLevelPage>
   void generateExercise() {
     final random = Random();
     setState(() {
-      num1 = random.nextInt(50) + 50; // Números entre 50 y 99
-      num2 = random.nextInt(50) + 50;
+      // Generar números entre 1 y 20
+      num1 = random.nextInt(20) + 1; // Números entre 1 y 20
+      num2 = random.nextInt(20) + 1;
+
       final operations = ['+', '-', '*', '/'];
       operation = operations[random.nextInt(operations.length)];
 
       switch (operation) {
         case '+':
+          // Suma sencilla
           correctAnswer = num1 + num2;
           break;
         case '-':
+          // Resta sencilla (asegurarse de que el resultado no sea negativo)
+          if (num1 < num2) {
+            num1 = num2 +
+                random.nextInt(10); // Asegurar que num1 sea mayor que num2
+          }
           correctAnswer = num1 - num2;
           break;
         case '*':
+          // Multiplicación sencilla
           correctAnswer = num1 * num2;
           break;
         case '/':
-          // Asegurar división exacta
-          num1 = num1 * num2;
-          correctAnswer = num1 ~/ num2;
+          // División con resultado entero
+          // Asegurarse de que num1 sea múltiplo de num2 para una división exacta
+          num1 = (random.nextInt(10) + 1) *
+              (random.nextInt(10) + 1); // Para asegurar división exacta
+          num2 = random.nextInt(10) + 1; // Divisor entre 1 y 10
+          correctAnswer = num1 ~/ num2; // División exacta (enteros)
           break;
       }
     });
@@ -3205,26 +3220,36 @@ class _HardLevelPageState extends State<HardLevelPage> {
   void generateExercise() {
     final random = Random();
     setState(() {
-      num1 = random.nextInt(90) + 10; // Números entre 10 y 99
-      num2 = random.nextInt(90) + 10;
+      // Generar números entre 1 y 20
+      num1 = random.nextInt(20) + 1; // Números entre 1 y 20
+      num2 = random.nextInt(20) + 1;
 
       List<String> operations = ['+', '-', '*', '/'];
       operation = operations[random.nextInt(operations.length)];
 
       switch (operation) {
         case '+':
+          // Suma sencilla
           correctAnswer = (num1 + num2).toDouble();
           break;
         case '-':
+          // Resta sencilla (asegurarse de que el resultado no sea negativo)
+          if (num1 < num2) {
+            num1 = num2 +
+                random.nextInt(10); // Asegurar que num1 sea mayor que num2
+          }
           correctAnswer = (num1 - num2).toDouble();
           break;
         case '*':
+          // Multiplicación sencilla (resultado no mayor a 100)
           correctAnswer = (num1 * num2).toDouble();
           break;
         case '/':
-          // Asegurar división exacta
-          num1 = (num1 * num2);
-          correctAnswer = num1 / num2;
+          // División con resultado entero
+          num1 = (random.nextInt(10) + 1) *
+              (random.nextInt(10) + 1); // Para asegurar división exacta
+          num2 = random.nextInt(10) + 1; // Divisor entre 1 y 10
+          correctAnswer = (num1 / num2).toDouble();
           break;
       }
     });
@@ -3732,26 +3757,36 @@ class _TimedLevelPageState extends State<TimedLevelPage> {
   void generateExercise() {
     final random = Random();
     setState(() {
-      num1 = random.nextInt(90) + 10; // Números entre 10 y 99
-      num2 = random.nextInt(90) + 10;
+      // Generar números entre 1 y 20
+      num1 = random.nextInt(20) + 1; // Números entre 1 y 20
+      num2 = random.nextInt(20) + 1;
 
       List<String> operations = ['+', '-', '*', '/'];
       operation = operations[random.nextInt(operations.length)];
 
       switch (operation) {
         case '+':
+          // Suma sencilla
           correctAnswer = (num1 + num2).toDouble();
           break;
         case '-':
+          // Resta sencilla (asegurarse de que el resultado no sea negativo)
+          if (num1 < num2) {
+            num1 = num2 +
+                random.nextInt(10); // Asegurar que num1 sea mayor que num2
+          }
           correctAnswer = (num1 - num2).toDouble();
           break;
         case '*':
+          // Multiplicación sencilla (resultado no mayor a 100)
           correctAnswer = (num1 * num2).toDouble();
           break;
         case '/':
-          // Asegurar división exacta
-          num1 = (num1 * num2);
-          correctAnswer = num1 / num2;
+          // División con resultado entero
+          num1 = (random.nextInt(10) + 1) *
+              (random.nextInt(10) + 1); // Para asegurar división exacta
+          num2 = random.nextInt(10) + 1; // Divisor entre 1 y 10
+          correctAnswer = (num1 / num2).toDouble();
           break;
       }
     });
@@ -4414,10 +4449,35 @@ class MateManiaDrawer extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                // Lógica para cerrar sesión
-                await FirebaseAuth.instance.signOut();
-                Navigator.pop(
-                    context); // Cerrar el diálogo después de cerrar sesión
+                try {
+                  // Cerrar sesión
+                  await FirebaseAuth.instance.signOut();
+
+                  // Verifica si la sesión se cerró
+                  User? user = FirebaseAuth.instance.currentUser;
+                  if (user == null) {
+                    print('Usuario cerrado correctamente');
+                  } else {
+                    print('Error al cerrar sesión');
+                  }
+
+                  // Después de cerrar sesión, cerramos el diálogo y regresamos a la pantalla de inicio
+                  Navigator.pop(context); // Cierra el diálogo
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            LoginScreen()), // Reemplaza con tu pantalla de login
+                  );
+                } catch (e) {
+                  print('Error al cerrar sesión: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error al cerrar sesión'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
               child: Text("Salir"),
               style: ElevatedButton.styleFrom(
