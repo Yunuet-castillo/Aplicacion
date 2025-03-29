@@ -1257,7 +1257,6 @@ class _ProfilePageState extends State<_ProfilePage> {
   final TextEditingController _schoolController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = true;
-  String? _profileImageUrl;
 
   @override
   void initState() {
