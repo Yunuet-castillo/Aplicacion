@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:ui';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -381,7 +382,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Enlaces adicionales
                     TextButton(
                       onPressed: () {
-                        // Implementar recuperación de contraseña
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForgotPasswordScreen()),
+                        );
                       },
                       child: Text(
                         '¿Olvidaste tu contraseña?',
@@ -495,6 +500,114 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+class ForgotPasswordScreen extends StatefulWidget {
+  @override
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final TextEditingController emailController = TextEditingController();
+
+  Future<void> _resetPassword() async {
+    final email = emailController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, ingresa tu correo electrónico')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Se ha enviado un correo para restablecer tu contraseña')),
+      );
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.message}')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Fondo con gradiente
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          Positioned.fill(child: CustomPaint(painter: BubblePainter())),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  SizedBox(height: 80),
+                  Text(
+                    'Recuperar Contraseña',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            hintText: 'Correo electrónico',
+                            prefixIcon: Icon(Icons.email),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _resetPassword,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF7B1FA2),
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            'Enviar correo de recuperación',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // Clase para crear el patrón de burbujas en el fondo
 class BubblePainter extends CustomPainter {
   @override
@@ -533,10 +646,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  // Función para registrar usuario en Firebase Auth y guardar en Firestore
   Future<void> addUser() async {
     try {
-      // Aseguramos que la operación se realice en el hilo principal
       await Future.delayed(Duration.zero, () async {
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -546,7 +657,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
         User? user = userCredential.user;
         if (user != null) {
-          // Guardar datos en Firestore
           await FirebaseFirestore.instance
               .collection('usuarios')
               .doc(user.uid)
@@ -595,13 +705,21 @@ class _RegistrationFormState extends State<RegistrationForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Registro de Usuario')),
       body: Stack(
         children: [
-          // Fondo atractivo
+          Positioned.fill(child: CustomPaint(painter: BubblePainter())),
           Positioned.fill(
-            child: CustomPaint(
-              painter: BubblePainter(),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.deepPurple.withOpacity(0.4),
+                    Colors.purple.withOpacity(0.3)
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
           ),
           SafeArea(
@@ -610,7 +728,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    // Botón de regreso
                     Align(
                       alignment: Alignment.topLeft,
                       child: IconButton(
@@ -619,97 +736,107 @@ class _RegistrationFormState extends State<RegistrationForm> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    // Título
                     Text(
                       'Crear Cuenta',
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: 34,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: 1.5,
                       ),
                     ),
-                    SizedBox(height: 40),
-                    // Formulario
+                    SizedBox(height: 30),
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
+                            color: Colors.black26,
+                            blurRadius: 12,
+                            offset: Offset(0, 8),
+                          )
                         ],
                       ),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            _buildTextField(
-                                _nameController, Icons.person, "Nombre"),
-                            SizedBox(height: 20),
-                            _buildTextField(_apepatController, Icons.person,
-                                "Apellido paterno"),
-                            SizedBox(height: 20),
-                            _buildTextField(_apematController, Icons.person,
-                                "Apellido materno"),
-                            SizedBox(height: 20),
-                            _buildDatePickerField(),
-                            SizedBox(height: 20),
-                            _buildTextField(_ageController, Icons.cake, "Edad",
-                                keyboardType: TextInputType.number),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                                _schoolController, Icons.school, "Escuela"),
-                            SizedBox(height: 20),
-                            _buildTextField(_emailController, Icons.email,
-                                "Correo electrónico",
-                                keyboardType: TextInputType.emailAddress),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                                _passwordController, Icons.lock, "Contraseña",
-                                obscureText: _obscurePassword,
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: Color(0xFF7B1FA2),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                _buildTextField(
+                                    _nameController, Icons.person, "Nombre"),
+                                SizedBox(height: 15),
+                                _buildTextField(_apepatController, Icons.person,
+                                    "Apellido paterno"),
+                                SizedBox(height: 15),
+                                _buildTextField(_apematController, Icons.person,
+                                    "Apellido materno"),
+                                SizedBox(height: 15),
+                                _buildDatePickerField(),
+                                SizedBox(height: 15),
+                                _buildTextField(
+                                    _ageController, Icons.cake, "Edad",
+                                    keyboardType: TextInputType.number),
+                                SizedBox(height: 15),
+                                _buildTextField(
+                                    _schoolController, Icons.school, "Escuela"),
+                                SizedBox(height: 15),
+                                _buildTextField(_emailController, Icons.email,
+                                    "Correo electrónico",
+                                    keyboardType: TextInputType.emailAddress),
+                                SizedBox(height: 15),
+                                _buildTextField(
+                                  _passwordController,
+                                  Icons.lock,
+                                  "Contraseña",
+                                  obscureText: _obscurePassword,
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
-                                  },
-                                )),
-                            SizedBox(height: 30),
-                            // Botón de registro
-                            ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  addUser();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF7B1FA2),
-                                padding: EdgeInsets.symmetric(vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
                                 ),
-                              ),
-                              child: Text(
-                                'Registrarse',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
+                                SizedBox(height: 30),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      addUser();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF7B1FA2),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 16, horizontal: 50),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                  ),
+                                  child: Text(
+                                    'Registrarse',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
+                    SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -722,43 +849,59 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
   Widget _buildDatePickerField() {
     return _buildTextField(
-        _birthDateController, Icons.calendar_today, "Fecha de nacimiento",
-        readOnly: true, onTap: () async {
-      DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1900),
-        lastDate: DateTime.now(),
-      );
-      if (pickedDate != null) {
-        setState(() {
-          _birthDateController.text =
-              "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-        });
-      }
-    });
+      _birthDateController,
+      Icons.calendar_today,
+      "Fecha de nacimiento",
+      readOnly: true,
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        );
+        if (pickedDate != null) {
+          setState(() {
+            _birthDateController.text =
+                "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+          });
+        }
+      },
+    );
   }
 
   Widget _buildTextField(
-      TextEditingController controller, IconData icon, String label,
-      {TextInputType keyboardType = TextInputType.text,
-      bool obscureText = false,
-      bool readOnly = false,
-      Widget? suffixIcon,
-      VoidCallback? onTap}) {
+    TextEditingController controller,
+    IconData icon,
+    String label, {
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+    bool readOnly = false,
+    Widget? suffixIcon,
+    VoidCallback? onTap,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
       readOnly: readOnly,
       onTap: onTap,
+      style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFF7B1FA2)),
+        labelStyle: TextStyle(color: Colors.white),
+        prefixIcon: Icon(icon, color: Colors.white),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: Colors.grey[200],
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+        fillColor: Colors.white.withOpacity(0.1),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white38),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.white),
+        ),
       ),
     );
   }
