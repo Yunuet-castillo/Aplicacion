@@ -10,6 +10,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:ui';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -239,7 +240,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  bool _obscurePassword = false;
   Future<void> iniciarSesion() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
@@ -930,8 +931,10 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         return _LevelsPage();
       case 1:
-        return _AchievementsPage();
+        return const AchievementsPage();
       case 2:
+        return _RankingPage();
+      case 3:
         return _ProfilePage();
       default:
         return _LevelsPage();
@@ -1023,6 +1026,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Icon(Icons.emoji_events, size: 32),
               ),
               label: 'Logros',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_events, size: 32),
+              label: 'Competencia',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person, size: 32),
@@ -1187,201 +1194,426 @@ class _LevelsPage extends StatelessWidget {
   }
 }
 
-class _AchievementsPage extends StatelessWidget {
+Widget barraProgreso(String titulo, int completados, int total) {
+  double porcentaje = completados / total;
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(titulo),
+      LinearPercentIndicator(
+        lineHeight: 14.0,
+        percent: porcentaje > 1 ? 1 : porcentaje,
+        backgroundColor: Colors.grey[300],
+        progressColor: Colors.blue,
+        center: Text("${(porcentaje * 100).toInt()}%"),
+      ),
+    ],
+  );
+}
+
+//logro resumen bd
+Future<void> guardarLogroResumen({
+  required String nivel, // "facil", "intermedio", etc.
+  required int correctas,
+  required int incorrectas,
+}) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
+
+  final ref = FirebaseFirestore.instance
+      .collection('logros')
+      .doc(uid)
+      .collection('resumen')
+      .doc(nivel);
+
+  await FirebaseFirestore.instance.runTransaction((transaction) async {
+    final snapshot = await transaction.get(ref);
+    if (snapshot.exists) {
+      final data = snapshot.data()!;
+      transaction.update(ref, {
+        'ejercicios': (data['ejercicios'] ?? 0) + 1,
+        'correctas': (data['correctas'] ?? 0) + correctas,
+        'incorrectas': (data['incorrectas'] ?? 0) + incorrectas,
+      });
+    } else {
+      transaction.set(ref, {
+        'ejercicios': 1,
+        'correctas': correctas,
+        'incorrectas': incorrectas,
+      });
+    }
+  });
+}
+
+//historial con fecha
+Future<void> guardarLogroHistorial({
+  required String nivel,
+  required int correctas,
+  required int incorrectas,
+}) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
+
+  final fecha = DateTime.now();
+
+  await FirebaseFirestore.instance
+      .collection('logros')
+      .doc(uid)
+      .collection('historial')
+      .add({
+    'nivel': nivel,
+    'correctas': correctas,
+    'incorrectas': incorrectas,
+    'ejercicios': 1,
+    'fecha': Timestamp.fromDate(fecha),
+  });
+}
+
+//datos por nivel interfaz
+Future<Map<String, dynamic>?> obtenerResumenNivel(String nivel) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return null;
+
+  final doc = await FirebaseFirestore.instance
+      .collection('logros')
+      .doc(uid)
+      .collection('resumen')
+      .doc(nivel)
+      .get();
+
+  return doc.data();
+}
+
+Widget buildBar(int actual, int max, String label, Color color) {
+  double percent = max == 0 ? 0 : actual / max;
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text('$label: $actual'),
+      SizedBox(height: 5),
+      LinearProgressIndicator(
+        value: percent,
+        backgroundColor: Colors.grey[300],
+        valueColor: AlwaysStoppedAnimation<Color>(color),
+      ),
+      SizedBox(height: 10),
+    ],
+  );
+}
+
+Future<List<Map<String, dynamic>>> obtenerHistorialDelDia(String nivel) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return [];
+
+  final hoy = DateTime.now();
+  final inicio = DateTime(hoy.year, hoy.month, hoy.day);
+  final fin = inicio.add(Duration(days: 1));
+
+  final query = await FirebaseFirestore.instance
+      .collection('logros')
+      .doc(uid)
+      .collection('historial')
+      .where('nivel', isEqualTo: nivel)
+      .where('fecha', isGreaterThanOrEqualTo: Timestamp.fromDate(inicio))
+      .where('fecha', isLessThan: Timestamp.fromDate(fin))
+      .get();
+
+  return query.docs.map((doc) => doc.data()).toList();
+}
+
+Future<List<Map<String, dynamic>>> obtenerHistorialSemana(String nivel) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return [];
+
+  final hoy = DateTime.now();
+  final inicioSemana = hoy.subtract(Duration(days: hoy.weekday - 1)); // Lunes
+  final fin = hoy.add(Duration(days: 1)); // Hasta hoy
+
+  final query = await FirebaseFirestore.instance
+      .collection('logros')
+      .doc(uid)
+      .collection('historial')
+      .where('nivel', isEqualTo: nivel)
+      .where('fecha', isGreaterThanOrEqualTo: Timestamp.fromDate(inicioSemana))
+      .where('fecha', isLessThan: Timestamp.fromDate(fin))
+      .get();
+
+  return query.docs.map((doc) => doc.data()).toList();
+}
+
+class AchievementsPage extends StatefulWidget {
+  const AchievementsPage({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF7B1FA2), Color(0xFFE1BEE7)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            SizedBox(height: 20),
-            _buildAchievementSection(
-              "Nivel Fácil",
-              Icons.star_border,
-              Colors.green,
-              [
-                _buildProgress("Ejercicios Completados", 45, 50),
-                _buildProgress("Respuestas Correctas", 40, 50),
-                _buildProgress("Respuestas Incorrectas", 80, 100),
-              ],
-            ),
-            SizedBox(height: 20),
-            _buildAchievementSection(
-              "Nivel Intermedio",
-              Icons.star_half,
-              Colors.orange,
-              [
-                _buildProgress("Ejercicios Completados", 30, 50),
-                _buildProgress("Respuestas Correctas", 25, 50),
-                _buildProgress("Respuestas Incorrectas", 70, 100),
-              ],
-            ),
-            SizedBox(height: 20),
-            _buildAchievementSection(
-              "Nivel Difícil",
-              Icons.star,
-              Colors.red,
-              [
-                _buildProgress("Ejercicios Completados", 15, 50),
-                _buildProgress("Respuestas Correctas", 10, 50),
-                _buildProgress("Respuestas Incorrectas", 60, 100),
-              ],
-            ),
-            SizedBox(height: 20),
-            _buildAchievementSection(
-              "Nivel por Tiempo",
-              Icons.timer,
-              Colors.blue,
-              [
-                _buildProgress("Ejercicios Completados", 20, 50),
-                _buildProgress("Mejor Tiempo", 45, 60),
-                _buildProgress("Respuestas Incorrectas", 75, 100),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+  _AchievementsPageState createState() => _AchievementsPageState();
+}
+
+class _AchievementsPageState extends State<AchievementsPage> {
+  final List<String> niveles = ['facil', 'intermedio', 'dificil', 'por_tiempo'];
+  final Map<String, Map<String, dynamic>> logros = {};
+
+  @override
+  void initState() {
+    super.initState();
+    cargarLogros();
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Tus Logros",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.purple[800],
-            ),
-          ),
-          SizedBox(height: 10),
-          Text(
-            "¡Sigue practicando para mejorar tus habilidades!",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
+  Future<void> cargarLogros() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    for (String nivel in niveles) {
+      final doc = await FirebaseFirestore.instance
+          .collection('logros')
+          .doc(uid)
+          .collection('resumen')
+          .doc(nivel)
+          .get();
+
+      if (doc.exists) {
+        logros[nivel] = doc.data()!;
+      } else {
+        logros[nivel] = {'ejercicios': 0, 'correctas': 0, 'incorrectas': 0};
+      }
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  Widget _buildAchievementSection(
-      String title, IconData icon, Color color, List<Widget> progressBars) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: color, size: 30),
-              SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
-          Divider(color: color.withOpacity(0.3)),
-          ...progressBars,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgress(String label, int current, int total) {
-    final percentage = (current / total * 100).round();
+  Widget buildBar(int value, String label, Color color) {
+    double percent = (value > 0) ? value / 100 : 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+            Icon(
+              label.contains('completados')
+                  ? Icons.assignment
+                  : label.contains('correctas')
+                      ? Icons.check_circle
+                      : Icons.cancel,
+              color: color,
+              size: 20,
             ),
+            const SizedBox(width: 8),
             Text(
-              "$current/$total",
-              style: TextStyle(
+              '$label: $value',
+              style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.purple[800],
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
           ],
         ),
-        SizedBox(height: 5),
-        Stack(
-          children: [
-            Container(
-              height: 10,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(5),
-              ),
-            ),
-            FractionallySizedBox(
-              widthFactor: current / total,
-              child: Container(
-                height: 10,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.purple[300]!, Colors.purple[800]!],
-                  ),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-            ),
-          ],
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            value: percent.clamp(0.0, 1.0),
+            backgroundColor: Colors.purple.shade100,
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+            minHeight: 10,
+          ),
         ),
+        const SizedBox(height: 16),
       ],
+    );
+  }
+
+  Widget buildNivelSection(String nivel) {
+    final data =
+        logros[nivel] ?? {'ejercicios': 0, 'correctas': 0, 'incorrectas': 0};
+    final titulo = switch (nivel) {
+      'facil' => 'Nivel Fácil',
+      'intermedio' => 'Nivel Intermedio',
+      'dificil' => 'Nivel Difícil',
+      'por_tiempo' => 'Nivel Por Tiempo',
+      _ => nivel
+    };
+
+    return Card(
+      elevation: 6,
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: Colors.white.withOpacity(0.1),
+      shadowColor: Colors.black45,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              titulo,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+            buildBar(
+                data['ejercicios'] ?? 0, 'Ejercicios completados', Colors.blue),
+            buildBar(
+                data['correctas'] ?? 0, 'Respuestas correctas', Colors.green),
+            buildBar(
+                data['incorrectas'] ?? 0, 'Respuestas incorrectas', Colors.red),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF7B1FA2), // Morado
+              Color(0xFFFFFFFF), // Blanco
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: logros.isEmpty
+              ? const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                )
+              : ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  children: [
+                    const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      child: Text(
+                        '¡Tus Logros!',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    ...niveles
+                        .map((nivel) => buildNivelSection(nivel))
+                        .toList(),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+void actualizarPuntaje(int puntosGanados) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  final userRef = FirebaseFirestore.instance.collection('Usuarios').doc(uid);
+
+  await FirebaseFirestore.instance.runTransaction((transaction) async {
+    final snapshot = await transaction.get(userRef);
+    final currentPoints = snapshot['puntajeTotal'] ?? 0;
+    transaction.update(userRef, {
+      'puntajeTotal': currentPoints + puntosGanados,
+      'ultimaActividad': Timestamp.now(),
+    });
+  });
+}
+
+class _RankingPage extends StatelessWidget {
+  final List<Map<String, dynamic>> mockRanking = [
+    {'nombre': 'Ana', 'puntos': 320},
+    {'nombre': 'Luis', 'puntos': 300},
+    {'nombre': 'Sofía', 'puntos': 280},
+    {'nombre': 'Beto', 'puntos': 500},
+    {'nombre': 'Claudia', 'puntos': 200},
+    {'nombre': 'Dylan', 'puntos': 590},
+    {'nombre': 'Alejandra', 'puntos': 732},
+    {'nombre': 'Andrea', 'puntos': 900},
+    {'nombre': 'Tú', 'puntos': 250}, // Usuario actual
+  ];
+
+  final String usuarioActual = 'Tú'; // Aquí puede ir el nombre real del usuario
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '🏆 Ranking Global',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: ListView.builder(
+              itemCount: mockRanking.length,
+              itemBuilder: (context, index) {
+                final usuario = mockRanking[index];
+                final nombre = usuario['nombre'];
+                final puntos = usuario['puntos'];
+                final posicion = index + 1;
+
+                // Ícono personalizado
+                Widget leadingIcon;
+                if (posicion == 1) {
+                  leadingIcon = Text('🥇', style: TextStyle(fontSize: 24));
+                } else if (nombre == usuarioActual) {
+                  leadingIcon = Text('⭐', style: TextStyle(fontSize: 24));
+                } else {
+                  leadingIcon =
+                      Text('$posicion.', style: TextStyle(fontSize: 18));
+                }
+
+                return Card(
+                  color: nombre == usuarioActual
+                      ? Colors.purple[50]
+                      : Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.purple.shade100,
+                      child: leadingIcon,
+                    ),
+                    title: Text(
+                      nombre,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: nombre == usuarioActual
+                            ? Colors.deepPurple
+                            : Colors.black,
+                      ),
+                    ),
+                    trailing: Text(
+                      '$puntos pts',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
