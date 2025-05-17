@@ -1004,42 +1004,50 @@ class _MyHomePageState extends State<MyHomePage> {
         child: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.book, size: 32),
+              icon: Text('📚', style: TextStyle(fontSize: 26)),
               activeIcon: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.purple.shade100,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.book, size: 32),
+                child: Text('📚', style: TextStyle(fontSize: 26)),
               ),
               label: 'Niveles',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events, size: 32),
+              icon: Text('🏆', style: TextStyle(fontSize: 26)),
               activeIcon: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.purple.shade100,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.emoji_events, size: 32),
+                child: Text('🏆', style: TextStyle(fontSize: 26)),
               ),
               label: 'Logros',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events, size: 32),
-              label: 'Competencia',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person, size: 32),
+              icon: Text('🏅', style: TextStyle(fontSize: 26)),
               activeIcon: Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.purple.shade100,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.person, size: 32),
+                child: Text('🏅', style: TextStyle(fontSize: 26)),
+              ),
+              label: 'Competencia',
+            ),
+            BottomNavigationBarItem(
+              icon: Text('👤', style: TextStyle(fontSize: 26)),
+              activeIcon: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade100,
+                  shape: BoxShape.circle,
+                ),
+                child: Text('👤', style: TextStyle(fontSize: 26)),
               ),
               label: 'Perfil',
             ),
@@ -1512,20 +1520,6 @@ class _AchievementsPageState extends State<AchievementsPage> {
   }
 }
 
-void actualizarPuntaje(int puntosGanados) async {
-  final uid = FirebaseAuth.instance.currentUser?.uid;
-  final userRef = FirebaseFirestore.instance.collection('Usuarios').doc(uid);
-
-  await FirebaseFirestore.instance.runTransaction((transaction) async {
-    final snapshot = await transaction.get(userRef);
-    final currentPoints = snapshot['puntajeTotal'] ?? 0;
-    transaction.update(userRef, {
-      'puntajeTotal': currentPoints + puntosGanados,
-      'ultimaActividad': Timestamp.now(),
-    });
-  });
-}
-
 class _RankingPage extends StatelessWidget {
   final List<Map<String, dynamic>> mockRanking = [
     {'nombre': 'Ana', 'puntos': 320},
@@ -1536,10 +1530,10 @@ class _RankingPage extends StatelessWidget {
     {'nombre': 'Dylan', 'puntos': 590},
     {'nombre': 'Alejandra', 'puntos': 732},
     {'nombre': 'Andrea', 'puntos': 900},
-    {'nombre': 'Tú', 'puntos': 250}, // Usuario actual
+    {'nombre': 'Yunuet Castillo', 'puntos': 250},
   ];
 
-  final String usuarioActual = 'Tú'; // Aquí puede ir el nombre real del usuario
+  final String usuarioActual = 'Yunuet Castillo';
 
   @override
   Widget build(BuildContext context) {
