@@ -1261,7 +1261,6 @@ Future<void> guardarLogroHistorial({
 }) async {
   final uid = FirebaseAuth.instance.currentUser?.uid;
   if (uid == null) return;
-
   final fecha = DateTime.now();
 
   await FirebaseFirestore.instance
