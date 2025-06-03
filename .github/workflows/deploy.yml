@@ -3,31 +3,54 @@ name: Deploy Flutter Web to GitHub Pages
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # 1. Clona el repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
+      # 2. Instala Flutter
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.3'  
+          flutter-version: '3.24.3'
 
-      - name: Enable web
+      # 3. Habilita soporte web
+      - name: Enable web support
         run: flutter config --enable-web
 
+      # 4. Obtiene dependencias
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build web
+      # 5. Compila para web
+      - name: Build Flutter Web
         run: flutter build web
 
+      # 6. Verifica que se haya generado la carpeta `build/web`
+      - name: Check build output
+        run: ls -R build/web
+
+      # 7. Paso de depuración de Git
+      - name: Debug Git Info
+        run: |
+          git --version
+          git status || echo "No Git repo"
+          git config --list || echo "No config"
+          ls -la
+
+      # 8. Despliega en GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages       
+          publish_branch: gh-pages
           publish_dir: build/web
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          force_orphan: true  # Elimina historial anterior del branch gh-pages
