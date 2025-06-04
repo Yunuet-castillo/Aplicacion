@@ -1254,27 +1254,6 @@ Future<void> guardarLogroResumen({
 }
 
 //historial con fecha
-Future<void> guardarLogroHistorial({
-  required String nivel,
-  required int correctas,
-  required int incorrectas,
-}) async {
-  final uid = FirebaseAuth.instance.currentUser?.uid;
-  if (uid == null) return;
-  final fecha = DateTime.now();
-
-  await FirebaseFirestore.instance
-      .collection('logros')
-      .doc(uid)
-      .collection('historial')
-      .add({
-    'nivel': nivel,
-    'correctas': correctas,
-    'incorrectas': incorrectas,
-    'ejercicios': 1,
-    'fecha': Timestamp.fromDate(fecha),
-  });
-}
 
 //datos por nivel interfaz
 Future<Map<String, dynamic>?> obtenerResumenNivel(String nivel) async {
